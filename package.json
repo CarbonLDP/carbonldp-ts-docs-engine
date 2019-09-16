@@ -43,7 +43,8 @@
     "tslib": "^1.9.3",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^1.1.1",
-    "webpack": "^4.39.3"
+    "webpack": "^4.39.3",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@types/node": "^10.14.18",
