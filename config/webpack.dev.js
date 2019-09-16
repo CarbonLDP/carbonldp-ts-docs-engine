@@ -1,23 +1,23 @@
-const path = require( 'path' );
-const webpack = require( 'webpack' );
-const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const path = require( "path" );
+const webpack = require( "webpack" );
+const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
 
-const SRC_DIR = path.resolve( __dirname, '../src/' );
-const DIST_DIR = path.resolve( __dirname, '../../../docs/' );
 
-module.exports = {
-	mode: 'development',
+const SRC_DIR = path.resolve( __dirname, "../src/assets/" );
+
+module.exports = ( env ) => ({
+	mode: "development",
 
 	entry: {
-		'bundle': path.resolve( SRC_DIR, 'entry-point.js' ),
+		"bundle": path.resolve( SRC_DIR, "entry-point.js" ),
 	},
 
 	output: {
-		path: DIST_DIR,
-		filename: 'scripts/bundle.js',
+		path: env.DIST,
+		filename: "assets/bundle.js",
 	},
 
-	devtool: 'source-map',
+	devtool: "source-map",
 
 	module: {
 		rules: [
@@ -25,19 +25,18 @@ module.exports = {
 				test: /\.s?css$/,
 				use: [
 					MiniCssExtractPlugin.loader,
-					'css-loader?sourceMap&importLoaders=1',
-					'postcss-loader?sourceMap&postcss={}',
-					'sass-loader?sourceMap',
+					"css-loader?sourceMap&importLoaders=1",
+					"sass-loader?sourceMap",
 				],
 			},
 			{
 				test: /fonts\/.*\.(woff|svg|eot|ttf|woff2)$/,
 				loader: [
 					{
-						loader: 'url-loader',
+						loader: "url-loader",
 						query: {
 							limit: 1024,
-							name: '/assets/[name].[ext]',
+							name: "/assets/[name].[ext]",
 						},
 					},
 				],
@@ -60,4 +59,4 @@ module.exports = {
 			},
 		} ),
 	],
-};
+});

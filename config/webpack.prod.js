@@ -1,22 +1,22 @@
-const path = require( 'path' );
-const webpack = require( 'webpack' );
-const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
-const OptimizeCSSAssetsPlugin = require( 'optimize-css-assets-webpack-plugin' );
+const path = require( "path" );
+const webpack = require( "webpack" );
+const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
+const UglifyJsPlugin = require( "uglifyjs-webpack-plugin" );
+const OptimizeCSSAssetsPlugin = require( "optimize-css-assets-webpack-plugin" );
 
-const SRC_DIR = path.resolve( __dirname, '../src/' );
-const DIST_DIR = path.resolve( __dirname, '../../../docs/' );
 
-module.exports = {
-	mode: 'production',
+const SRC_DIR = path.resolve( __dirname, "../src/assets/" );
+
+module.exports = ( env ) => ({
+	mode: "production",
 
 	entry: {
-		'bundle': path.resolve( SRC_DIR, 'entry-point.js' ),
+		"bundle": path.resolve( SRC_DIR, "entry-point.js" ),
 	},
 
 	output: {
-		path: DIST_DIR,
-		filename: 'scripts/bundle.min.js',
+		path: env.DIST,
+		filename: "assets/[name].[contenthash].js",
 	},
 
 	module: {
@@ -27,26 +27,26 @@ module.exports = {
 					{
 						loader: MiniCssExtractPlugin.loader,
 						options: {
-							publicPath: '../'
+							publicPath: "../"
 						}
 					},
 					{
-						loader: 'css-loader',
+						loader: "css-loader",
 						options: {
 							minimize: true,
 							discardComments: { removeAll: true },
 						},
 					},
 					{
-						loader: 'postcss-loader',
+						loader: "postcss-loader",
 						options: {
 							plugins: [
-								require( 'autoprefixer' ),
+								require( "autoprefixer" ),
 							]
 						}
 					},
 					{
-						loader: 'sass-loader'
+						loader: "sass-loader"
 					}
 				],
 			},
@@ -54,19 +54,30 @@ module.exports = {
 				test: /fonts\/.*\.(woff|svg|eot|ttf|woff2)$/,
 				loader: [
 					{
-						loader: 'url-loader',
+						loader: "url-loader",
 						query: {
 							limit: 1024,
-							name: 'assets/[name].[ext]',
+							name: "/assets/[name].[contenthash].[ext]",
 						},
 					},
-					'image-webpack-loader',
+					"image-webpack-loader",
 				],
 			},
 		],
 	},
 
 	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				vendor: {
+					test: /node_modules|semantic-ui/,
+					chunks: "initial",
+					name: "vendor",
+					priority: 10,
+					enforce: true,
+				},
+			},
+		},
 		minimizer: [
 			new UglifyJsPlugin( {
 				cache: true,
@@ -79,17 +90,21 @@ module.exports = {
 					},
 				},
 			} ),
-			new OptimizeCSSAssetsPlugin( {} )
+			new OptimizeCSSAssetsPlugin( {
+				cssProcessorPluginOptions: {
+					preset: [ "default", { discardComments: { removeAll: true } } ],
+				},
+			} )
 		]
 	},
 
 	plugins: [
 		new MiniCssExtractPlugin( {
-			filename: 'assets/styles.min.css',
+			filename: "assets/[name].[contenthash].css",
 		} ),
 		new webpack.ProvidePlugin( {
-			$: 'jquery',
-			jQuery: 'jquery',
+			$: "jquery",
+			jQuery: "jquery",
 		} ),
 		new webpack.DefinePlugin( {
 			"process.env": {
@@ -97,4 +112,4 @@ module.exports = {
 			},
 		} ),
 	],
-};
+});
