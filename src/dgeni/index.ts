@@ -1,29 +1,30 @@
 import path = require( "path" );
+
 import { Package } from "dgeni";
-// Processors
+
 import { navigationProcessor } from "./processors/navigation";
 import { normalizeDocsProcessor } from "./processors/normalizeDocs";
 import { privateFilterProcessor } from "./processors/private-filter";
 import { multipleExports } from "./processors/multipleExports";
-// Config marked lib
-import "./rendering/config-marked";
-// Nunjucks filters
+
 import { highlightFilter } from "./rendering/filters/highlight";
 import { linkifyFilter } from "./rendering/filters/linkify";
 import { nullifyEmptyFilter } from "./rendering/filters/nullifyEmpty";
-// Nunjucks tags
 import { highlightTag } from "./rendering/tags/highlight";
-// Dgeni inline tags
+
 import { paramInLineTag } from "./inline-tags-def/paramInlineTag"
 
-// Project configuration.
-const projectRootDir = path.resolve( __dirname, "./../../.." );
+
+import "./rendering/config-marked";
+
+
+// Paths configuration.
+const projectRootDir = path.resolve( __dirname, "../../" );
 const sourceDir = path.resolve( projectRootDir, "src/" );
 const outputDir = path.resolve( projectRootDir, "docs/" );
-const templateDir = path.resolve( __dirname, "./templates" );
+const templateDir = path.resolve( sourceDir, "templates/" );
 
-
-const apiDocsPackage = new Package( "sparqler-api-docs", [
+export const apiDocsPackage = new Package( "sparqler-api-docs", [
 	require( "dgeni-packages/jsdoc" ),
 	require( "dgeni-packages/nunjucks" ),
 	require( "dgeni-packages/typescript" ),
@@ -36,12 +37,12 @@ const apiDocsPackage = new Package( "sparqler-api-docs", [
 	.processor( normalizeDocsProcessor )
 	.processor( multipleExports )
 
-	.config( function( log ) {
+	.config( function( log:any ) {
 		log.level = "info";
 	} )
 
 	// Configure the processor for reading files from the file system.
-	.config( function( readFilesProcessor, writeFilesProcessor ) {
+	.config( function( readFilesProcessor:any, writeFilesProcessor:any ) {
 		readFilesProcessor.basePath = sourceDir;
 		readFilesProcessor.$enabled = false; // disable for now as we are using readTypeScriptModules
 
@@ -49,7 +50,7 @@ const apiDocsPackage = new Package( "sparqler-api-docs", [
 	} )
 
 	// Configure the output path for written files (i.e., file names).
-	.config( function( computePathsProcessor, computeIdsProcessor ) {
+	.config( function( computePathsProcessor:any, computeIdsProcessor:any ) {
 
 		computePathsProcessor.pathTemplates.push( {
 			docTypes: [ "module", "class", "interface", "function", "enum", "type-alias", "const" ],
@@ -71,10 +72,9 @@ const apiDocsPackage = new Package( "sparqler-api-docs", [
 	} )
 
 	// Configure the processor for understanding TypeScript.
-	.config( function( readTypeScriptModules ) {
+	.config( function( readTypeScriptModules:any ) {
 		readTypeScriptModules.basePath = sourceDir;
 		readTypeScriptModules.hidePrivateMembers = false;
-		// readTypeScriptModules.sortClassMembers = true;
 
 		// Entry points for docs generation.
 		readTypeScriptModules.sourceFiles = [
@@ -86,16 +86,20 @@ const apiDocsPackage = new Package( "sparqler-api-docs", [
 	} )
 
 	// Configure the processor to accept the '@param' tag.
-	.config(function (inlineTagProcessor, getInjectables) {
-		inlineTagProcessor.inlineTagDefinitions.push( ...getInjectables([
+	.config( function( inlineTagProcessor:any, getInjectables:any ) {
+		inlineTagProcessor.inlineTagDefinitions.push( ...getInjectables( [
 			paramInLineTag
-		]))
-	})
+		] ) )
+	} )
 
 	// Configure processor for finding nunjucks templates.
-	.config( function( templateFinder ) {
+	.config( function( templateFinder:any ) {
 		// Where to find the templates for the doc rendering
-		templateFinder.templateFolders = [ templateDir, path.resolve( templateDir, "partials" ), path.resolve( templateDir, "macros" ) ];
+		templateFinder.templateFolders = [
+			templateDir,
+			path.resolve( templateDir, "partials/" ),
+			path.resolve( templateDir, "macros/" ),
+		];
 
 		// Standard patterns for matching docs to templates
 		templateFinder.templatePatterns = [
@@ -103,7 +107,7 @@ const apiDocsPackage = new Package( "sparqler-api-docs", [
 			"${ doc.docType }.macro.njk",
 		];
 	} )
-	.config( function( templateEngine, getInjectables ) {
+	.config( function( templateEngine:any, getInjectables:any ) {
 		templateEngine.filters.push( ...getInjectables( [
 			linkifyFilter,
 			nullifyEmptyFilter,
@@ -112,7 +116,4 @@ const apiDocsPackage = new Package( "sparqler-api-docs", [
 		templateEngine.tags.push( ...getInjectables( [
 			highlightTag,
 		] ) );
-	} )
-
-
-export = apiDocsPackage;
+	} );
