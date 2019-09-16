@@ -1,0 +1,55 @@
+{
+  "name": "carbonldp-ts-docs-engine",
+  "version": "0.1.0",
+  "description": "Engine to generate API documentation for Carbon LDP TypeScript projects",
+  "main": "src/index.ts",
+  "scripts": {
+    "postinstall": "npm run --prefix node_modules/fomantic-ui build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CarbonLDP/carbonldp-ts-docs-engine.git"
+  },
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/CarbonLDP/carbonldp-ts-docs-engine/issues"
+  },
+  "homepage": "https://github.com/CarbonLDP/carbonldp-ts-docs-engine",
+  "author": {
+    "name": "Rodolfo Aguirre",
+    "email": "rodolfo.aguirre@base22.com"
+  },
+  "contributors": [
+    {
+      "name": "Iñaki Janeiro",
+      "email": "inaki.janeiro@base22.com"
+    }
+  ],
+  "dependencies": {
+    "tslib": "^1.9.3",
+    "autoprefixer": "^9.6.1",
+    "css-loader": "^1.0.0",
+    "dgeni": "^0.4.12",
+    "dgeni-packages": "^0.28.1",
+    "file-loader": "^1.1.11",
+    "fomantic-ui": "^2.7.6",
+    "image-webpack-loader": "^4.3.1",
+    "mini-css-extract-plugin": "^0.8.0",
+    "node-sass": "^4.7.2",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "postcss-loader": "^3.0.0",
+    "prismjs": "^1.17.1",
+    "sass-loader": "^7.1.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "url-loader": "^1.1.1",
+    "webpack": "^4.39.3"
+  },
+  "devDependencies": {
+    "@types/node": "^10.14.18",
+    "@types/webpack": "^4.39.1",
+    "ts-node": "^5.0.1",
+    "typescript": "^3.5.3"
+  },
+  "private": true
+}
