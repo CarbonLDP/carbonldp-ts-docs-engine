@@ -3,6 +3,8 @@ const webpack = require( "webpack" );
 const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
 const UglifyJsPlugin = require( "uglifyjs-webpack-plugin" );
 const OptimizeCSSAssetsPlugin = require( "optimize-css-assets-webpack-plugin" );
+const HtmlWebpackPlugin = require( "html-webpack-plugin" );
+const FaviconsWebpackPlugin = require( "favicons-webpack-plugin" );
 
 
 const SRC_DIR = path.resolve( __dirname, "../src/assets/" );
@@ -12,6 +14,12 @@ module.exports = ( env ) => ({
 
 	entry: {
 		"bundle": path.resolve( SRC_DIR, "entry-point.js" ),
+	},
+
+	resolve: {
+		alias: {
+			"/assets": SRC_DIR,
+		},
 	},
 
 	output: {
@@ -57,6 +65,19 @@ module.exports = ( env ) => ({
 						loader: "url-loader",
 						query: {
 							limit: 1024,
+							name: "/assets/[name].[contenthash].[ext]",
+						},
+					},
+					"image-webpack-loader",
+				],
+			},
+			{
+				test: /\.(gif|png|jpe?g|svg|ico)$/i,
+				exclude: /node_modules|semantic-ui/,
+				use: [
+					{
+						loader: "file-loader",
+						options: {
 							name: "/assets/[name].[contenthash].[ext]",
 						},
 					},
@@ -111,5 +132,19 @@ module.exports = ( env ) => ({
 				"NODE_ENV": JSON.stringify( "production" ),
 			},
 		} ),
+		...env.files.map( file => new HtmlWebpackPlugin( {
+			filename: file,
+			template: file,
+			minify: {
+				collapseWhitespace: true,
+				removeComments: true,
+				removeRedundantAttributes: true,
+				removeScriptTypeAttributes: true,
+				removeStyleLinkTypeAttributes: true,
+				useShortDoctype: true,
+				minifyJS: true,
+			},
+		} ) ),
+		new FaviconsWebpackPlugin( path.resolve( SRC_DIR, "images/carbon-ldp-iconograph_500x478.png" ) ),
 	],
 });

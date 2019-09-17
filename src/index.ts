@@ -66,11 +66,11 @@ namespace DocsEngine {
 		}
 	}
 
-	async function bundle( options:InternalOptions ):Promise<void> {
+	async function bundle( options:InternalOptions, files:string[] ):Promise<void> {
 		options.log.info( `=== Bundle and process HTML ===` );
 		return new Promise( ( resolve, reject ) => {
 			const config:webpack.Configuration = require( "../webpack.config" )(
-				{ DIST: options.out },
+				{ DIST: options.out, files },
 				{ mode: options.mode }
 			);
 
@@ -119,9 +119,8 @@ namespace DocsEngine {
 	export async function generate( options:Options ):Promise<void> {
 		const internalOptions = parseOptions( options );
 
-		// TODO: Use out files
 		const files = await generateHTML( internalOptions );
-		await bundle( internalOptions );
+		await bundle( internalOptions, files );
 	}
 
 }

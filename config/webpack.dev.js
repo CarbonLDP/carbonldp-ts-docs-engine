@@ -1,6 +1,7 @@
 const path = require( "path" );
 const webpack = require( "webpack" );
 const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
+const HtmlWebpackPlugin = require( "html-webpack-plugin" );
 
 
 const SRC_DIR = path.resolve( __dirname, "../src/assets/" );
@@ -10,6 +11,12 @@ module.exports = ( env ) => ({
 
 	entry: {
 		"bundle": path.resolve( SRC_DIR, "entry-point.js" ),
+	},
+
+	resolve: {
+		alias: {
+			"/assets": SRC_DIR,
+		},
 	},
 
 	output: {
@@ -41,6 +48,24 @@ module.exports = ( env ) => ({
 					},
 				],
 			},
+			{
+				test: /\.(gif|png|jpe?g|svg|ico)$/i,
+				exclude: /node_modules|semantic-ui/,
+				use: [
+					{
+						loader: "file-loader",
+						options: {
+							name: "/assets/[name].[ext]",
+						},
+					},
+					{
+						loader: "image-webpack-loader",
+						options: {
+							disable: true, // webpack@2.x and newer
+						},
+					},
+				],
+			},
 		],
 	},
 
@@ -58,5 +83,9 @@ module.exports = ( env ) => ({
 				"NODE_ENV": JSON.stringify( "development" ),
 			},
 		} ),
+		...env.files.map( file => new HtmlWebpackPlugin( {
+			filename: file,
+			template: file,
+		} ) )
 	],
 });
