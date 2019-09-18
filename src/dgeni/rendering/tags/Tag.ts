@@ -1,5 +1,6 @@
 import { Extension } from "nunjucks";
+import { NunjucksThis } from "../NunjucksThis";
 
 export interface Tag extends Extension {
-	process( context:object, content:() => string ):string;
+	process( this:NunjucksThis, context:NunjucksThis, content:() => string ):string;
 }

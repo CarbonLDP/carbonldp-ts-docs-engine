@@ -4,6 +4,12 @@
 # Dist
 dist/
 
+# IDE build files
+src/**/*.js
+src/**/*.map
+src/**/*.d.ts
+!src/assets
+
 # Semantic UI
 semantic-ui/
 !semantic-ui/src

@@ -1,21 +1,18 @@
-import path = require( "path" );
-
 import { Package } from "dgeni";
+import path from "path";
+
+import { paramInLineTag } from "./inline-tags-def/paramInlineTag"
+import { multipleExports } from "./processors/multipleExports";
 
 import { navigationProcessor } from "./processors/navigation";
 import { normalizeDocsProcessor } from "./processors/normalizeDocs";
-import { privateFilterProcessor } from "./processors/private-filter";
-import { multipleExports } from "./processors/multipleExports";
+
+import "./rendering/config-marked";
 
 import { highlightFilter } from "./rendering/filters/highlight";
 import { linkifyFilter } from "./rendering/filters/linkify";
 import { nullifyEmptyFilter } from "./rendering/filters/nullifyEmpty";
 import { highlightTag } from "./rendering/tags/highlight";
-
-import { paramInLineTag } from "./inline-tags-def/paramInlineTag"
-
-
-import "./rendering/config-marked";
 
 
 // Paths configuration.
@@ -32,14 +29,9 @@ export const apiDocsPackage = new Package( "sparqler-api-docs", [
 	require( "dgeni-packages/git" ),
 ] )
 
-	.processor( privateFilterProcessor )
 	.processor( navigationProcessor )
 	.processor( normalizeDocsProcessor )
 	.processor( multipleExports )
-
-	.config( function( log:any ) {
-		log.level = "info";
-	} )
 
 	// Configure the processor for reading files from the file system.
 	.config( function( readFilesProcessor:any, writeFilesProcessor:any ) {

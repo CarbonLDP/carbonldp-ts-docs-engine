@@ -2,9 +2,10 @@
   "name": "carbonldp-ts-docs-engine",
   "version": "0.1.0",
   "description": "Engine to generate API documentation for Carbon LDP TypeScript projects",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "postinstall": "npm run --prefix node_modules/fomantic-ui build",
+    "build": "rimraf dist/ && tsc --build tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -50,8 +51,12 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/marked": "^0.6.5",
     "@types/node": "^10.14.18",
+    "@types/nunjucks": "^3.1.2",
+    "@types/prismjs": "^1.16.0",
     "@types/webpack": "^4.39.1",
+    "rimraf": "^3.0.0",
     "ts-node": "^5.0.1",
     "typescript": "^3.5.3"
   },

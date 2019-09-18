@@ -1,4 +1,6 @@
+import { NunjucksThis } from "../NunjucksThis";
+
 export interface Filter {
 	name:string;
-	process( ...params:any[] ):any;
+	process( this:NunjucksThis, ...params:any[] ):any;
 }

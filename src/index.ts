@@ -5,6 +5,8 @@ import { apiDocsPackage } from "./dgeni";
 import webpack = require("webpack");
 import winston = require("winston");
 
+
+// Add missing webpack functions types
 declare module "webpack" {
 	namespace Stats {
 		function presetToOptions( name:webpack.Stats.Preset ):webpack.Stats.ToJsonOptionsObject;

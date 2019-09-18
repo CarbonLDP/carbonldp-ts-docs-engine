@@ -1,19 +1,8 @@
-import {
-	DocCollection,
-	Document,
-	Processor,
-} from "dgeni";
+import { Processor, } from "dgeni";
+import { ModuleDoc } from "dgeni-packages/typescript/api-doc-types/ModuleDoc";
+import { Document } from "../models/Document";
+import { NavigationDoc } from "../models/NavigationDoc";
 
-interface NavigationDoc {
-	id:string;
-	name:string;
-	type:string;
-	exports:NavigationDoc[];
-}
-
-function docCompare( first:NavigationDoc, second:NavigationDoc ):number {
-	return first.id.toLowerCase().localeCompare( second.id.toLowerCase() );
-}
 
 export function navigationProcessor():Navigation {
 	return new Navigation();
@@ -21,16 +10,20 @@ export function navigationProcessor():Navigation {
 
 export class Navigation implements Processor {
 
+	static idCompare( first:{ id:string }, second:{ id:string } ):number {
+		return first.id.toLowerCase().localeCompare( second.id.toLowerCase() );
+	}
+
 	$runAfter = [ "processing-docs" ];
 	$runBefore = [ "docs-processed" ];
 
 	_navigationDocs:NavigationDoc[] = [];
 
-	$process( docs:DocCollection ) {
-		const filteredDocs:DocCollection = docs.filter( doc => {
+	$process( docs:Document[] ) {
+		const filteredDocs:Document[] = docs.filter( doc => {
 			if( [ "function-overload" ].includes( doc.docType ) ) return false;
 
-			if( doc.docType === "module" ) {
+			if( doc instanceof ModuleDoc ) {
 				if( doc.fileInfo.baseName !== "index" ) return false;
 				if( doc.name === "index" ) this._fixIndexModule( doc );
 				this._addNavigationDoc( doc );
@@ -43,12 +36,12 @@ export class Navigation implements Processor {
 			return true;
 		} );
 
-		this._navigationDocs.sort( docCompare );
+		this._navigationDocs.sort( Navigation.idCompare );
 
 		return filteredDocs;
 	}
 
-	_fixIndexModule( doc:Document ):void {
+	_fixIndexModule( doc:ModuleDoc & { isDefault?:boolean } ):void {
 		// Change document properties
 		doc.docType = "index";
 		doc.id = "";
@@ -56,9 +49,9 @@ export class Navigation implements Processor {
 
 		let exported:boolean = false;
 		doc.exports = doc.exports.filter( exportDoc => {
-			if( (exported && exportDoc.name === "SPARQLER") || exportDoc.name === "default") return false;
-			
-			if (exportDoc.name === "SPARQLER"){
+			if( (exported && exportDoc.name === "SPARQLER") || exportDoc.name === "default" ) return false;
+
+			if( exportDoc.name === "SPARQLER" ) {
 				exportDoc.isDefault = true;
 				exported = true;
 			}
@@ -69,9 +62,9 @@ export class Navigation implements Processor {
 		} );
 	}
 
-	_addNavigationDoc( doc:Document ):void {
-		const exports:DocCollection = doc.exports || [];
-		exports.sort( docCompare );
+	_addNavigationDoc( doc:ModuleDoc ):void {
+		const exports = doc.exports || [];
+		exports.sort( Navigation.idCompare );
 
 		this._navigationDocs.push( {
 			id: doc.id,

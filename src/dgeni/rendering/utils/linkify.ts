@@ -1,8 +1,9 @@
 import { Document } from "dgeni";
+import { GetLinkInfo } from "../../models/LinkInfo";
 
 const RAW_MATCH:RegExp = /((?:&#x3D;&gt;|&#x3D;|&lt;|&amp;|extends|=>|[|=<&,:](?!gt;)|^) ?)([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)/g;
 const HTML_MATCH:RegExp = /((?:<span class="token (?:punctuation|operator|keyword)">(?:&lt;|<|&amp;|&|extends|=>|[|=<&,:])<\/span>) *(?:<span class="token class-name">)?)([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)/g;
-const ESCAPE_CHARS = {
+const ESCAPE_CHARS:Record<string, string> = {
 	"&": "&amp;",
 	"<": "&lt;",
 	">": "&gt;",
@@ -87,8 +88,9 @@ const MDN_IDENTIFIERS:string[] = [
 	"undefined",
 ];
 
-export function linkify( str:string, getLinkInfo, doc:Document, escape:boolean = true ):string {
-	if( ! str ) return;
+
+export function linkify( str:string, getLinkInfo:GetLinkInfo, doc:Document, escape:boolean = true ):string {
+	if( !str ) return str;
 
 	const IDENTIFIERS_REGEX:RegExp = str.match( /<span class="token/ ) ?
 		HTML_MATCH : RAW_MATCH;
@@ -99,8 +101,8 @@ export function linkify( str:string, getLinkInfo, doc:Document, escape:boolean =
 			const linkInfo = getLinkInfo( identifier, identifier, doc );
 
 			// In case the link starts with '#' or '.', the link is not valid unless it's part of the MDN Documentation.
-			if( ! linkInfo.valid || linkInfo.url.startsWith("#") || linkInfo.url.startsWith(".")) {
-				if( ! MDN_IDENTIFIERS.includes( identifier ) ) return match;
+			if( !linkInfo.valid || linkInfo.url.startsWith( "#" ) || linkInfo.url.startsWith( "." ) ) {
+				if( !MDN_IDENTIFIERS.includes( identifier ) ) return match;
 
 				linkInfo.url = MDN_URL + identifier;
 				linkInfo.external = true;
