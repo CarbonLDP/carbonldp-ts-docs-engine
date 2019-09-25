@@ -7,6 +7,7 @@ const FaviconsWebpackPlugin = require( "favicons-webpack-plugin" );
 
 
 const SRC_DIR = path.resolve( __dirname, "../src/assets/" );
+const MODULES_DIR = path.resolve( __dirname, "../node_modules/" );
 
 const isProd = ( argv ) =>
 	argv.mode === "production";
@@ -28,6 +29,10 @@ module.exports = ( env, argv ) => ({
 		alias: {
 			"/assets": SRC_DIR,
 		},
+	},
+	resolveLoader: {
+		modules: [MODULES_DIR],
+		extensions: ['.js', '.json'],
 	},
 
 	output: {
