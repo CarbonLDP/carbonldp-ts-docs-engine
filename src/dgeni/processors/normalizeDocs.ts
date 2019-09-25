@@ -1,4 +1,4 @@
-import { Processor } from "dgeni";
+import { Processor, DocCollection } from "dgeni";
 import { ClassExportDoc } from "dgeni-packages/typescript/api-doc-types/ClassExportDoc";
 import { ContainerExportDoc } from "dgeni-packages/typescript/api-doc-types/ContainerExportDoc";
 import { FunctionExportDoc } from "dgeni-packages/typescript/api-doc-types/FunctionExportDoc";
@@ -39,7 +39,7 @@ export class NormalizeDocs implements Processor {
 
 	}
 
-	$process( docs:Document[] ) {
+	$process( docs:DocCollection ) {
 		this.docs = docs;
 		docs.forEach( doc => {
 			if( [ "module", "index" ].includes( doc.docType ) ) return;
@@ -58,6 +58,23 @@ export class NormalizeDocs implements Processor {
 					break;
 			}
 		} );
+
+		// Fixes document link aliases
+		docs.forEach(doc => {
+			if (doc.docType === "module") {
+				doc.aliases.length = 0;
+			} else if (doc.docType === "member") {
+				doc.aliases.shift();
+			} else if (doc.docType  === "interface") {
+				if(doc.moduleDoc.id) {
+					let fullPath:string = `${doc.moduleDoc.id}/${doc.fileInfo.baseName}`;
+					if (doc.originalModule !== fullPath) {
+						doc.aliases.length = 0;
+					}
+				}
+			}
+		});
+
 		return docs;
 	}
 
@@ -70,11 +87,6 @@ export class NormalizeDocs implements Processor {
 		if( doc.statics ) doc.statics
 			.filter( isMethod )
 			.forEach( this._normalizeFunctionLike, this );
-
-		if( doc.extendsClauses.length )
-			doc.extendsClauses.forEach( info =>
-				this._normalizeClass( info.doc as ClassExportDoc ),
-			);
 
 		if( doc.interface ) {
 			doc.interface.description = this.tsHost.getContent( doc.symbol.getDeclarations()![ 0 ]! );
