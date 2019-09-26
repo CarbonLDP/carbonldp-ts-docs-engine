@@ -68,9 +68,9 @@ export class MultipleExports implements Processor {
 				let exportDoc: ConstantExport = new ConstExportDoc(this.tsHost, doc.moduleDoc, doc.symbol); // Create constant document
 				doc.constants = [exportDoc]; // Add the constant's document to the Interface Document as a reference
 				exportDoc.members = []; // Array for possible methods within the constant
+				docs.push(exportDoc);
 				try {
 					let members = doc.constants[0].declaration.type.members; // If the constant has a description, it will be stored here.
-					docs.push(exportDoc);
 					members.forEach((member:any) => {
 						let memberDoc: MethodMemberDoc | PropertyMemberDoc | undefined = undefined;
 						if (member.kind === 155) {

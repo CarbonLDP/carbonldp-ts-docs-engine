@@ -60,20 +60,20 @@ export class NormalizeDocs implements Processor {
 		} );
 
 		// Fixes document link aliases
-		docs.forEach(doc => {
-			if (doc.docType === "module") {
-				doc.aliases.length = 0;
-			} else if (doc.docType === "member") {
-				doc.aliases.shift();
-			} else if (doc.docType  === "interface") {
-				if(doc.moduleDoc.id) {
-					let fullPath:string = `${doc.moduleDoc.id}/${doc.fileInfo.baseName}`;
-					if (doc.originalModule !== fullPath) {
-						doc.aliases.length = 0;
-					}
-				}
-			}
-		});
+		// docs.forEach(doc => {
+		// 	if (doc.docType === "module") {
+		// 		doc.aliases.length = 0;
+		// 	} else if (doc.docType === "member") {
+		// 		doc.aliases.shift();
+		// 	} else if (doc.docType  === "interface") {
+		// 		if(doc.moduleDoc.id) {
+		// 			let fullPath:string = `${doc.moduleDoc.id}/${doc.fileInfo.baseName}`;
+		// 			if (doc.originalModule !== fullPath) {
+		// 				doc.aliases.length = 0;
+		// 			}
+		// 		}
+		// 	}
+		// });
 
 		return docs;
 	}
