@@ -60,22 +60,22 @@ jobs:
 
             npm publish --tag ${NPM_TAG}
 
-  workflows:
-    version: 2
-    build_and_deploy:
-      jobs:
-        - build:
-            filters:
-              tags:
-                only: /.*/
-              branches:
-                ignore:
-                  - gh-pages
-        - deploy_npm:
-            requires:
-              - build
-            filters:
-              branches:
-                ignore: /.*/
-              tags:
-                only: /^v\d+\.\d+\.\d+(-.+)?/
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - gh-pages
+      - deploy_npm:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+(-.+)?/
