@@ -44,7 +44,7 @@ export class MultipleExports implements Processor {
 					break;
 
 				case "interface":
-					this._ensureInterfaceAndConstant( doc, docs );
+					this._ensureInterfaceAndConstant( doc );
 					break;
 			}
 		} );
@@ -54,34 +54,32 @@ export class MultipleExports implements Processor {
 
 
 	// TODO: Improve structure
-	_ensureInterfaceAndConstant(doc: any, docs: DocCollection):void {
+	_ensureInterfaceAndConstant( doc:any ) {
 		// Not only an interface
-		if (!(doc.symbol.flags ^ SymbolFlags.Interface)) return;
+		if( !(doc.symbol.flags ^ SymbolFlags.Interface) ) return;
 
 		// Remove interface momentary
 		doc.symbol.flags = doc.symbol.flags ^ SymbolFlags.Interface;
 
-		switch (getExportDocType(doc.symbol)) {
-
+		switch( getExportDocType( doc.symbol ) ) {
 			// If it is an interface with a constant merged export:
 			case "const":
-				let exportDoc: ConstantExport = new ConstExportDoc(this.tsHost, doc.moduleDoc, doc.symbol); // Create constant document
-				doc.constants = [exportDoc]; // Add the constant's document to the Interface Document as a reference
+				let exportDoc:ConstantExport = new ConstExportDoc( this.tsHost, doc.moduleDoc, doc.symbol ); //Create constant document
+				doc.constants = [ exportDoc ]; // Add the constant's document to the Interface Document as a reference
 				exportDoc.members = []; // Array for possible methods within the constant
-				docs.push(exportDoc);
 				try {
 					let members = doc.constants[0].declaration.type.members; // If the constant has a description, it will be stored here.
 					members.forEach((member:any) => {
 						let memberDoc: MethodMemberDoc | PropertyMemberDoc | undefined = undefined;
-						if (member.kind === 155) {
+						if (member.kind === 155 || member.kind === 156) {
 							// Create method document and push it to both the constant document as well as the full document's list.
 							memberDoc = new MethodMemberDoc(this.tsHost, doc, member.symbol, member);
-						} else if (member.kind === 153) {
+						} else if (member.kind === 153 || member.kind === 154) {
 							memberDoc = new PropertyMemberDoc(this.tsHost, doc, member.symbol, member, null, null);
 						}
 						if (memberDoc) {
 							exportDoc.members!.push(memberDoc);
-							docs.push(memberDoc);
+							this.docs.push(memberDoc);
 						}
 					});
 				} catch {
@@ -89,21 +87,22 @@ export class MultipleExports implements Processor {
 					let container = doc.constants[0].variableDeclaration.initializer.nextContainer;
 					if (container) {
 						let memberDoc: MethodMemberDoc | PropertyMemberDoc | undefined = undefined;
-						if (container.kind === 155) {
+						if (container.kind === 155 || container.kind === 156) {
 							// Create method document and push it to both the constant document as well as the full document's list.
 							memberDoc = new MethodMemberDoc(this.tsHost, doc, container.symbol, container);
-						} else if (container.kind === 153) {
+						} else if (container.kind === 153 || container.kind === 154) {
 							memberDoc = new PropertyMemberDoc(this.tsHost, doc, container.symbol, container, null, null);
 						}
 						if (memberDoc) {
 							exportDoc.members!.push(memberDoc);
-							docs.push(memberDoc);
+							this.docs.push(memberDoc);
 						}
 					}
 				}
 				break;
+
 			default:
-				this.log.error(`Other declaration merged for ${doc.name}`);
+				this.log.error( `Other declaration merged for ${ doc.name }` );
 				break;
 		}
 

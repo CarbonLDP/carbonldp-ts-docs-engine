@@ -25,7 +25,6 @@ export class NormalizeDocs implements Processor {
 
 	$runAfter = [ "processing-docs" ];
 	$runBefore = [ "docs-processed" ];
-	docs!:Document[];
 
 	private readonly tsHost:Host;
 	private readonly log:Logger;
@@ -40,7 +39,6 @@ export class NormalizeDocs implements Processor {
 	}
 
 	$process( docs:DocCollection ) {
-		this.docs = docs;
 		docs.forEach( doc => {
 			if( [ "module", "index" ].includes( doc.docType ) ) return;
 
@@ -50,7 +48,7 @@ export class NormalizeDocs implements Processor {
 					break;
 
 				case "interface":
-					this._normalizeInterface( doc as InterfaceExportDoc );
+					this._normalizeInterface( doc as InterfaceExportDoc, docs );
 					break;
 
 				case "function":
@@ -60,20 +58,13 @@ export class NormalizeDocs implements Processor {
 		} );
 
 		// Fixes document link aliases
-		// docs.forEach(doc => {
-		// 	if (doc.docType === "module") {
-		// 		doc.aliases.length = 0;
-		// 	} else if (doc.docType === "member") {
-		// 		doc.aliases.shift();
-		// 	} else if (doc.docType  === "interface") {
-		// 		if(doc.moduleDoc.id) {
-		// 			let fullPath:string = `${doc.moduleDoc.id}/${doc.fileInfo.baseName}`;
-		// 			if (doc.originalModule !== fullPath) {
-		// 				doc.aliases.length = 0;
-		// 			}
-		// 		}
-		// 	}
-		// });
+		docs.forEach(doc => {
+			if (doc.docType === "module") {
+				doc.aliases.length = 0;
+			} else if (doc.docType === "member") {
+				doc.aliases.shift();
+			}
+		});
 
 		return docs;
 	}
@@ -93,9 +84,9 @@ export class NormalizeDocs implements Processor {
 		}
 	}
 
-	_normalizeInterface( doc:InterfaceExportDoc ):void {
+	_normalizeInterface( doc:InterfaceExportDoc, docs:any ):void {
 		this._normalizeContainer( doc );
-		this._normalizeInterfaceWithConstant( doc );
+		this._normalizeInterfaceWithConstant( doc, docs );
 
 		if( doc.members ) doc.members
 			.filter( isIndex )
@@ -135,7 +126,7 @@ export class NormalizeDocs implements Processor {
 	}
 
 	// TODO: Improve structure
-	_normalizeInterfaceWithConstant( doc:any ) {
+	_normalizeInterfaceWithConstant( doc:any, docs:any ) {
 		// Not only an interface
 		if( !(doc.symbol.flags ^ SymbolFlags.Interface) ) return;
 
@@ -145,10 +136,10 @@ export class NormalizeDocs implements Processor {
 		// If it is an interface with a constant merged export:
 		switch( getExportDocType( doc.symbol ) ) {
 			case "const":
-				let index = this.docs.indexOf( doc.constants[ 0 ] ) // get the index of the consant from full document list
+				let index = docs.indexOf( doc.constants[ 0 ] ) // get the index of the consant from full document list
 				let numberOfMembers = doc.constants[ 0 ].members.length; // get the number of methods associated with that constant
 				doc.constants[ 0 ].members.forEach( ( member:any ) => {this._normalizeParams( member )} ) // for each method normalize it's parameters
-				this.docs.splice( index, numberOfMembers + 1 ); // remove the constant and members from the full document list
+				docs.splice( index, numberOfMembers + 1 ); // remove the constant and members from the full document list
 				doc.description = this.tsHost.getContent( doc.symbol.getDeclarations()![ 0 ]! ); // update interface description
 				break;
 			default:
