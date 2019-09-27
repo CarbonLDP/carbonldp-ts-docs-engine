@@ -60,5 +60,7 @@
     "ts-node": "^5.0.1",
     "typescript": "^3.5.3"
   },
-  "private": true
+  "files": [
+    "dist/"
+  ]
 }
