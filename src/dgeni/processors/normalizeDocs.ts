@@ -25,6 +25,7 @@ export class NormalizeDocs implements Processor {
 
 	$runAfter = [ "processing-docs" ];
 	$runBefore = [ "docs-processed" ];
+	docs!:Document[];
 
 	private readonly tsHost:Host;
 	private readonly log:Logger;
@@ -38,7 +39,8 @@ export class NormalizeDocs implements Processor {
 
 	}
 
-	$process( docs:DocCollection ) {
+	$process( docs:Document[] ) {
+		this.docs = docs;
 		docs.forEach( doc => {
 			if( [ "module", "index" ].includes( doc.docType ) ) return;
 
@@ -48,7 +50,7 @@ export class NormalizeDocs implements Processor {
 					break;
 
 				case "interface":
-					this._normalizeInterface( doc as InterfaceExportDoc, docs );
+					this._normalizeInterface( doc as InterfaceExportDoc );
 					break;
 
 				case "function":
@@ -84,9 +86,9 @@ export class NormalizeDocs implements Processor {
 		}
 	}
 
-	_normalizeInterface( doc:InterfaceExportDoc, docs:any ):void {
+	_normalizeInterface( doc:InterfaceExportDoc ):void {
 		this._normalizeContainer( doc );
-		this._normalizeInterfaceWithConstant( doc, docs );
+		this._normalizeInterfaceWithConstant( doc );
 
 		if( doc.members ) doc.members
 			.filter( isIndex )
@@ -126,7 +128,7 @@ export class NormalizeDocs implements Processor {
 	}
 
 	// TODO: Improve structure
-	_normalizeInterfaceWithConstant( doc:any, docs:any ) {
+	_normalizeInterfaceWithConstant( doc:any ) {
 		// Not only an interface
 		if( !(doc.symbol.flags ^ SymbolFlags.Interface) ) return;
 
@@ -136,10 +138,10 @@ export class NormalizeDocs implements Processor {
 		// If it is an interface with a constant merged export:
 		switch( getExportDocType( doc.symbol ) ) {
 			case "const":
-				let index = docs.indexOf( doc.constants[ 0 ] ) // get the index of the consant from full document list
+				let index = this.docs.indexOf( doc.constants[ 0 ] ) // get the index of the consant from full document list
 				let numberOfMembers = doc.constants[ 0 ].members.length; // get the number of methods associated with that constant
 				doc.constants[ 0 ].members.forEach( ( member:any ) => {this._normalizeParams( member )} ) // for each method normalize it's parameters
-				docs.splice( index, numberOfMembers + 1 ); // remove the constant and members from the full document list
+				this.docs.splice( index, numberOfMembers + 1 ); // remove the constant and members from the full document list
 				doc.description = this.tsHost.getContent( doc.symbol.getDeclarations()![ 0 ]! ); // update interface description
 				break;
 			default:
