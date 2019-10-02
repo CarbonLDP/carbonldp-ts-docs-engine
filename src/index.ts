@@ -87,6 +87,7 @@ namespace DocsEngine {
 				} ) );
 
 				if( error ) reject( error );
+				if( stats.hasErrors() ) reject( new Error(stats.toString("errors-only")));
 				else resolve();
 			} );
 		} )
