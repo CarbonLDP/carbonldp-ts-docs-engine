@@ -16,10 +16,9 @@ import { highlightTag } from "./rendering/tags/highlight";
 
 
 // Paths configuration.
-const projectRootDir = path.resolve( __dirname, "../../" );
-const sourceDir = path.resolve( projectRootDir, "src/" );
-const outputDir = path.resolve( projectRootDir, "docs/" );
-const templateDir = path.resolve( sourceDir, "templates/" );
+const sourceDir = path.resolve( process.cwd(), "src/" );
+const outputDir = path.resolve( process.cwd(), "docs/" );
+const templateDir = path.resolve( __dirname, "../templates/" );
 
 export const apiDocsPackage = new Package( "sparqler-api-docs", [
 	require( "dgeni-packages/jsdoc" ),
