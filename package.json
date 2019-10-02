@@ -4,8 +4,10 @@
   "description": "Engine to generate API documentation for Carbon LDP TypeScript projects",
   "main": "dist/index.js",
   "scripts": {
-    "postinstall": "npm run --prefix node_modules/fomantic-ui build",
-    "build": "rimraf dist/ && tsc --build tsconfig.json",
+    "build:ts": "tsc --build tsconfig.json",
+    "build:semantic": "npm run --prefix node_modules/fomantic-ui build",
+    "build:copy-files": "cp -rv src/{assets,templates} dist/",
+    "build": "rimraf dist/ && npm-run-all build:*",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,7 +36,6 @@
     "dgeni-packages": "^0.28.1",
     "favicons-webpack-plugin": "^1.0.2",
     "file-loader": "^1.1.11",
-    "fomantic-ui": "^2.7.6",
     "html-webpack-plugin": "^4.0.0-beta.8",
     "image-webpack-loader": "^4.3.1",
     "mini-css-extract-plugin": "^0.8.0",
