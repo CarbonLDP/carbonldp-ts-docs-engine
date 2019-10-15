@@ -29,10 +29,6 @@ module.exports = ( env, argv ) => ({
 			"/assets": SRC_DIR,
 		},
 	},
-	resolveLoader: {
-		modules: [MODULES_DIR],
-		extensions: ['.js', '.json'],
-	},
 
 	output: {
 		path: env.DIST,

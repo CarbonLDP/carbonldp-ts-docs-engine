@@ -1,11 +1,7 @@
 {% set members = doc.members | rejectattr( 'params' ) %}
-{% if members | length %}
-    <h3 class="doc-content__title">Properties</h3>
-    {% for member in members %}
-        {{ memberCode.property( member ) }}
-        {{ member.description | marked }}
-        {% if not loop.last %}
-            <div class="ui section divider"></div>
-        {% endif %}
-    {% endfor %}
+{{memberCode.renderProperty(false, members)}}
+
+{% if doc.statics | length %}
+    {% set staticMembers = doc.statics | rejectattr( 'params' ) %}
+    {{memberCode.renderProperty(true, staticMembers)}}
 {% endif %}
