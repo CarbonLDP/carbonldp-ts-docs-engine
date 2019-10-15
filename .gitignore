@@ -8,11 +8,8 @@ dist/
 src/**/*.js
 src/**/*.map
 src/**/*.d.ts
-!src/assets
-
-# Semantic UI
-semantic-ui/
-!semantic-ui/src
+!src/assets/**/*.js
+!src/semantic-ui/**/*.js
 
 ### macOS template
 # General

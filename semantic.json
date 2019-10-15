@@ -1,19 +1,19 @@
 {
-  "base": "semantic-ui/",
+  "base": "/",
   "paths": {
     "source": {
-      "config": "src/theme.config",
-      "definitions": "src/definitions/",
-      "site": "src/site/",
-      "themes": "src/themes/"
+      "config": "src/semantic-ui/theme.config",
+      "definitions": "src/semantic-ui/definitions/",
+      "site": "src/semantic-ui/site/",
+      "themes": "src/semantic-ui/themes/"
     },
     "output": {
-      "packaged": "dist/",
-      "uncompressed": "dist/components/",
-      "compressed": "dist/components/",
-      "themes": "dist/themes/"
+      "packaged": "dist/semantic-ui/",
+      "uncompressed": "dist/semantic-ui/components/",
+      "compressed": "dist/semantic-ui/components/",
+      "themes": "dist/semantic-ui/themes/"
     },
-    "clean": "dist/"
+    "clean": "dist/semantic-ui/"
   },
   "permission": false,
   "autoInstall": false,

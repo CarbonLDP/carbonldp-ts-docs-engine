@@ -1,10 +1,10 @@
 // Semantic UI
 if( process.env.NODE_ENV === "production" ) {
-	require( "../../semantic-ui/dist/semantic.min" );
-	require( "../../semantic-ui/dist/semantic.min.css" );
+	require( "../../dist/semantic-ui/semantic.min" );
+	require( "../../dist/semantic-ui/semantic.min.css" );
 } else {
-	require( "../../semantic-ui/dist/semantic" );
-	require( "../../semantic-ui/dist/semantic.css" );
+	require( "../../dist/semantic-ui/semantic" );
+	require( "../../dist/semantic-ui/semantic.css" );
 }
 
 // Customs

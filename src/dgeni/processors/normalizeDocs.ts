@@ -1,4 +1,4 @@
-import { Processor, DocCollection } from "dgeni";
+import { Processor } from "dgeni";
 import { ClassExportDoc } from "dgeni-packages/typescript/api-doc-types/ClassExportDoc";
 import { ContainerExportDoc } from "dgeni-packages/typescript/api-doc-types/ContainerExportDoc";
 import { FunctionExportDoc } from "dgeni-packages/typescript/api-doc-types/FunctionExportDoc";

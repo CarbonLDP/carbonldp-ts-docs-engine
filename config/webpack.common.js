@@ -6,8 +6,7 @@ const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
 const FaviconsWebpackPlugin = require( "favicons-webpack-plugin" );
 
 
-const SRC_DIR = path.resolve( __dirname, "../src/assets/" );
-const MODULES_DIR = path.resolve( __dirname, "../node_modules/" );
+const SRC_DIR = path.resolve( __dirname, "../dist/assets/" );
 
 const isProd = ( argv ) =>
 	argv.mode === "production";
@@ -70,7 +69,8 @@ module.exports = ( env, argv ) => ({
 			},
 			{
 				test: /\.(gif|png|jpe?g|svg|ico)$/i,
-				exclude: /node_modules|semantic-ui/,
+				// Exclude reloading semantic-ui assets
+				exclude: /semantic-ui/,
 				use: [
 					{
 						loader: "file-loader",

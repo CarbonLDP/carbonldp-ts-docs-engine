@@ -19,11 +19,11 @@ export class Navigation implements Processor {
 
 	_navigationDocs:NavigationDoc[] = [];
 
-	$process( docs:DocCollection[] ) {
-		const filteredDocs:DocCollection[] = docs.filter( (doc:any) => {
+	$process( docs:Document[] ) {
+		const filteredDocs:Document[] = docs.filter( (doc:Document) => {
 			if( [ "function-overload", "get-accessor-info" ].includes( doc.docType ) ) return false;
 
-			if( doc.docType === "module" ) {
+			if( doc instanceof ModuleDoc ) {
 				if( doc.fileInfo.baseName !== "index" ) return false;
 				if( doc.name === "index" ) this._fixIndexModule( doc );
 				this._addNavigationDoc( doc );
