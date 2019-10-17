@@ -1,7 +1,2 @@
 {% set members = doc.members | selectattr( 'params' ) | rejectattr( 'isIndex' ) %}
-{{memberCode.renderMethod(false, members)}}
-
-{% if doc.statics | length %}
-    {% set staticMembers = doc.statics | selectattr( 'params' ) | rejectattr( 'isIndex' ) %}
-    {{memberCode.renderMethod(true, staticMembers)}}
-{% endif %}
+{{renderMember.renderMethod(false, members)}}

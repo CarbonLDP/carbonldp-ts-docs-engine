@@ -26,7 +26,7 @@ module.exports = ( env, argv ) => ({
 
 	resolve: {
 		alias: {
-			"/assets": SRC_DIR,
+			"/engine-assets": SRC_DIR,
 		},
 	},
 

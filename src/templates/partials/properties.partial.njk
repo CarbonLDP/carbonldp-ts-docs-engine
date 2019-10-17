@@ -1,7 +1,2 @@
 {% set members = doc.members | rejectattr( 'params' ) %}
-{{memberCode.renderProperty(false, members)}}
-
-{% if doc.statics | length %}
-    {% set staticMembers = doc.statics | rejectattr( 'params' ) %}
-    {{memberCode.renderProperty(true, staticMembers)}}
-{% endif %}
+{{renderMember.renderProperty(false, members)}}

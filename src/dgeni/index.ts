@@ -16,7 +16,7 @@ import { highlightTag } from "./rendering/tags/highlight";
 
 
 // Paths configuration.
-const sourceDir = path.resolve( process.cwd(), "dist/" );
+const sourceDir = path.resolve( process.cwd(), "src/" );
 const outputDir = path.resolve( process.cwd(), "docs/" );
 const templateDir = path.resolve( __dirname, "../templates/" );
 
