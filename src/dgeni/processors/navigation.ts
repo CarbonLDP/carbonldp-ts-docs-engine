@@ -41,20 +41,15 @@ export class Navigation implements Processor {
 		return filteredDocs;
 	}
 
-	_fixIndexModule( doc:ModuleDoc & { isDefault?:boolean } ):void {
+	_fixIndexModule( doc:ModuleDoc  ):void {
 		// Change document properties
 		doc.docType = "index";
 		doc.id = "";
-		doc.isDefault = false;
 
 		let exported:boolean = false;
 		doc.exports = doc.exports.filter( exportDoc => {
-			if( (exported && exportDoc.name === "SPARQLER") || exportDoc.name === "default" ) return false;
+			if( exportDoc.name === "default" ) return false;
 
-			if( exportDoc.name === "SPARQLER" ) {
-				exportDoc.isDefault = true;
-				exported = true;
-			}
 			// Remove `index` from id
 			exportDoc.id = exportDoc.id.substr( 6 );
 

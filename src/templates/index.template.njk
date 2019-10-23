@@ -3,15 +3,10 @@
 {% block title %}Index{% endblock %}
 
 {% block content_continuation %}
-    <h2 class="doc-content__title">SPARQLER</h2>
-    <p>SPARQL query buildER for JavaScript/TypeScript which offers a fluent interface to help you construct queries and prevent errors by malformed patterns.</p>
-    <p>SPARQLER is a part of the <a href="https://carbonldp.com/">CarbonLDP™</a> family.</p>
-    <a class="main-logo" href="https://carbonldp.com">
-        <img class="ui big image centered" src="<%= require('/engine-assets/images/carbon-ldp-logo.png') %>">
-    </a>
+    <h2 class="doc-content__title">{{name}}</h2>
+    {{descriptionTemplate}}
     <div class="info-cards">
-        {% set main = doc.exports | selectattr('isDefault') | first %}
-        <a class="info-cards__card" href="{{ main.id }}">
+        <a class="info-cards__card" href="{{ mainClass }}">
             <div class="ui icon message">
                 <i class="code icon"></i>
                 <div class="content">Main Class</div>
@@ -38,7 +33,7 @@
                 <div class="content">
                     <a class="item" href="/{{ moduleDoc.id }}">
                         {%- set module -%}
-                            import {} from "sparqler{{ '/' + moduleDoc.id if moduleDoc.name !== 'index' }}"
+                            import {} from "{{npmName}}{{ '/' + moduleDoc.id if moduleDoc.name !== 'index' }}"
                         {%- endset %}
                         <code class="highlight language-typescript">{{ module | highlight('typescript', doc) }}</code>
                     </a>
