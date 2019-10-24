@@ -4,27 +4,7 @@
 
 {% block content_continuation %}
     <h2 class="doc-content__title">{{name}}</h2>
-    {{descriptionTemplate}}
-    <div class="info-cards">
-        <a class="info-cards__card" href="{{ mainClass }}">
-            <div class="ui icon message">
-                <i class="code icon"></i>
-                <div class="content">Main Class</div>
-            </div>
-        </a>
-        <a class="info-cards__card" href="https://carbonldp.com/documentation/javascript-sdk/querying/">
-            <div class="ui icon message">
-                <i class="book icon"></i>
-                <div class="content">Querying with the<br>Carbon LDP SDK</div>
-            </div>
-        </a>
-        <a class="info-cards__card" href="https://github.com/{{ git.info.owner }}/{{ git.info.repo }}/tree/{{ git.version.isSnapshot and 'master' or git.version.raw }}/">
-            <div class="ui icon message">
-                <i class="github icon"></i>
-                <div class="content">Source Code</div>
-            </div>
-        </a>
-    </div>
+    {% include 'partials/documentation-description.partial.njk' ignore missing %}
 
     <h2 class="doc-content__title">Table of Contents</h2>
     <div class="ui celled list contents-table">
@@ -46,7 +26,7 @@
                                 {% set color = 'teal'   if exported.docType === 'function'   else color %}
                                 {% set color = 'green'  if exported.docType === 'enum'       else color %}
                                 {% set color = 'yellow' if exported.docType === 'type-alias' else color %}
-                                {% set color = 'violet'  if exported.docType === 'const'      else color %}
+                                {% set color = 'violet' if exported.docType === 'const'      else color %}
                                 <span class="ui horizontal {{ color }} icon label contents-item__icon">{{ exported.docType | first | capitalize }}</span>
                                 <div class="content contents-item__text">
                                     <a href="/{{ exported.id }}">{{ exported.name }}</a>

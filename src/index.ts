@@ -4,7 +4,9 @@ import * as path from "path";
 import { apiDocsPackage } from "./dgeni";
 import webpack = require("webpack");
 import winston = require("winston");
+import fs from "fs";
 
+let partialTemplatesDir = path.join(__dirname, "templates/", "partials/");
 
 // Add missing webpack functions types
 declare module "webpack" {
@@ -47,7 +49,6 @@ namespace DocsEngine {
 			.config(function(renderDocsProcessor:any) {
 				renderDocsProcessor.extraData.name = options.name;
 				renderDocsProcessor.extraData.npmName = options.npmName;
-				renderDocsProcessor.extraData.descriptionTemplate = options.descriptionTemplate;
 				renderDocsProcessor.extraData.mainClass = options.mainClass;
 			}) 
 		;
@@ -104,12 +105,12 @@ namespace DocsEngine {
 	}
 
 
-	function parseOptions( options:Options ):InternalOptions {
+	 	async function parseOptions( options:Options ): Promise<InternalOptions> {
 
 		let npmName = __getPackageName(options);
 		let name = __getName(options, npmName);
-		let descriptionTemplate = __getDescriptionTemplate(options);
 		let mainClass = __getMainClass(options, npmName);
+		await __generateTemplate(options);
 
 		// Default values
 		const preOptions = Object.assign(
@@ -117,7 +118,6 @@ namespace DocsEngine {
 				logLevel: "info",
 				npmName: npmName,
 				name: name,
-				descriptionTemplate: descriptionTemplate,
 				mainClass: mainClass
 			},
 			options,
@@ -140,7 +140,7 @@ namespace DocsEngine {
 	}
 
 	export async function generate( options:Options ):Promise<void> {
-		const internalOptions = parseOptions( options );
+		const internalOptions = await parseOptions( options );
 
 		const files = await generateHTML( internalOptions );
 		await bundle( internalOptions, files );
@@ -163,15 +163,24 @@ namespace DocsEngine {
 
 	}
 
-	function __getDescriptionTemplate(options:Options): string | undefined {
-		return options.descriptionTemplate ? options.descriptionTemplate : undefined;
+	async function __generateTemplate(options:Options): Promise<void> {
+
+		return new Promise((resolve, reject) => {
+			fs.writeFile(`${partialTemplatesDir}documentation-description.partial.njk`, options.descriptionTemplate,  async (err) => {
+				if (err) {
+					console.log("Couldn't find file at", partialTemplatesDir );
+					return reject(err);
+				}
+				return resolve();
+			});
+		});
 	}
 
 	function __getMainClass(options: Options, npmName: string): string | undefined {
 
 		if (options.mainClass) return options.mainClass;
 
-		return __removePunctuation(npmName);
+		return __removePunctuation(npmName).charAt(0).toUpperCase() + npmName.slice(1); // Removes punctuation and capitalizes class name for PascalCase convention
 	}
 
 	function __removePunctuation(str: string): string{
