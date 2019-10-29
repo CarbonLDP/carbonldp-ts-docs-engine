@@ -3,8 +3,8 @@
 {% block title %}Index{% endblock %}
 
 {% block content_continuation %}
-    <h2 class="doc-content__title">{{name}}</h2>
-    {% include 'partials/documentation-description.partial.njk' ignore missing %}
+    <h2 class="doc-content__title">{{project.name}}</h2>
+    {% include project.descriptionTemplate ignore missing %}
 
     <h2 class="doc-content__title">Table of Contents</h2>
     <div class="ui celled list contents-table">
@@ -13,7 +13,7 @@
                 <div class="content">
                     <a class="item" href="/{{ moduleDoc.id }}">
                         {%- set module -%}
-                            import {} from "{{npmName}}{{ '/' + moduleDoc.id if moduleDoc.name !== 'index' }}"
+                            import {} from "{{project.npmName}}{{ '/' + moduleDoc.id if moduleDoc.name !== 'index' }}"
                         {%- endset %}
                         <code class="highlight language-typescript">{{ module | highlight('typescript', doc) }}</code>
                     </a>

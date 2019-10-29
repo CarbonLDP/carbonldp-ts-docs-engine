@@ -4,9 +4,6 @@ import * as path from "path";
 import { apiDocsPackage } from "./dgeni";
 import webpack = require("webpack");
 import winston = require("winston");
-import fs from "fs";
-
-let partialTemplatesDir = path.join(__dirname, "templates/", "partials/");
 
 // Add missing webpack functions types
 declare module "webpack" {
@@ -31,6 +28,12 @@ namespace DocsEngine {
 		log:winston.Logger
 	}
 
+	interface Project{
+		name: string,
+		npmName: string,
+		mainClass: string,
+		descriptionTemplate: string
+	}
 
 	async function generateHTML( options:InternalOptions ):Promise<string[]> {
 		options.log.info( `=== Generate HTML with Dgeni ===` );
@@ -47,10 +50,20 @@ namespace DocsEngine {
 				writeFilesProcessor.outputFolder = options.out;
 			} )
 			.config(function(renderDocsProcessor:any) {
-				renderDocsProcessor.extraData.name = options.name;
-				renderDocsProcessor.extraData.npmName = options.npmName;
-				renderDocsProcessor.extraData.mainClass = options.mainClass;
-			}) 
+				let Project: Project = {
+					name: options.name!,
+					npmName: options.npmName!,
+					mainClass: options.mainClass!,
+					descriptionTemplate: path.basename(options.descriptionTemplate!)
+				}
+
+				renderDocsProcessor.extraData.project = Project;
+			})
+			.config(function(templateFinder:any){
+					templateFinder.templateFolders
+						.push( path.dirname(options.descriptionTemplate!));
+
+			})
 		;
 
 		const docs:ApiDoc[] = await new Dgeni( [ configuredPackage ] )
@@ -110,15 +123,15 @@ namespace DocsEngine {
 		let npmName = __getPackageName(options);
 		let name = __getName(options, npmName);
 		let mainClass = __getMainClass(options, npmName);
-		await __generateTemplate(options);
-
+		let descriptionTemplate = __getDescriptionTemplate(options);
 		// Default values
 		const preOptions = Object.assign(
 			{
 				logLevel: "info",
 				npmName: npmName,
 				name: name,
-				mainClass: mainClass
+				mainClass: mainClass,
+				descriptionTemplate: descriptionTemplate
 			},
 			options,
 		);
@@ -149,7 +162,7 @@ namespace DocsEngine {
 	function __getPackageName(options:Options):string {
 		if (options.npmName) return options.npmName;
 		if (process.env.npm_package_name) return process.env.npm_package_name;
-		return path.basename(path.resolve()); // Name of the directory of the invoking package
+		return path.basename(process.cwd());
 	}
 
 	function __getName(options:Options, npmName:string){
@@ -163,29 +176,26 @@ namespace DocsEngine {
 
 	}
 
-	async function __generateTemplate(options:Options): Promise<void> {
-
-		return new Promise((resolve, reject) => {
-			fs.writeFile(`${partialTemplatesDir}documentation-description.partial.njk`, options.descriptionTemplate,  async (err) => {
-				if (err) {
-					console.log("Couldn't find file at", partialTemplatesDir );
-					return reject(err);
-				}
-				return resolve();
-			});
-		});
+	 function __getDescriptionTemplate(options:Options): string {
+		return options.descriptionTemplate ? options.descriptionTemplate : path.resolve(process.cwd(), "build/docs/templates/description-template.njk");
 	}
 
 	function __getMainClass(options: Options, npmName: string): string | undefined {
 
 		if (options.mainClass) return options.mainClass;
-
-		return __removePunctuation(npmName).charAt(0).toUpperCase() + npmName.slice(1); // Removes punctuation and capitalizes class name for PascalCase convention
+		let punctuationMatcher:RegExp = /(-|_|\.|\/)/g;
+		
+		// Removes punctuation and capitalizes class name for PascalCase convention
+		let className = npmName.replace(/\w+/g, match => {
+			return match[0].toUpperCase() + match.slice(1).toLowerCase();
+		});
+		return className.replace(punctuationMatcher,"");
 	}
 
 	function __removePunctuation(str: string): string{
 		let punctuationMatcher:RegExp = /(-|_|\.|\/)/g;
-		let normalizeName:RegExp = /^( )|( )$/g // If the first or last character was a special symbol, remove extra space
+		// If the first or last character was a special symbol, remove extra space
+		let normalizeName:RegExp = /^( )|( )$/g 
 
 		str = str.replace(punctuationMatcher, " ");
 		return str.replace(normalizeName, "");
