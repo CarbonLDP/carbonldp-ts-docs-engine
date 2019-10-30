@@ -5,12 +5,6 @@ import { apiDocsPackage } from "./dgeni";
 import webpack = require("webpack");
 import winston = require("winston");
 
-// Add missing webpack functions types
-declare module "webpack" {
-	namespace Stats {
-		function presetToOptions( name:webpack.Stats.Preset ):webpack.Stats.ToJsonOptionsObject;
-	}
-}
 
 namespace DocsEngine {
 	export interface Options {
@@ -28,11 +22,11 @@ namespace DocsEngine {
 		log:winston.Logger
 	}
 
-	interface Project{
-		name: string,
-		npmName: string,
-		mainClass: string,
-		descriptionTemplate: string
+	export interface Project {
+		name: string;
+		npmName: string;
+		mainClass: string;
+		descriptionTemplate: string;
 	}
 
 	async function generateHTML( options:InternalOptions ):Promise<string[]> {
@@ -50,14 +44,13 @@ namespace DocsEngine {
 				writeFilesProcessor.outputFolder = options.out;
 			} )
 			.config(function(renderDocsProcessor:any) {
-				let Project: Project = {
-					name: options.name!,
-					npmName: options.npmName!,
-					mainClass: options.mainClass!,
-					descriptionTemplate: path.basename(options.descriptionTemplate!)
-				}
 
-				renderDocsProcessor.extraData.project = Project;
+				renderDocsProcessor.extraData.project = <Project> {
+					name: options.name,
+					npmName: options.npmName,
+					mainClass: options.mainClass,
+					descriptionTemplate: path.basename(options.descriptionTemplate!)
+				};
 			})
 			.config(function(templateFinder:any){
 					templateFinder.templateFolders
