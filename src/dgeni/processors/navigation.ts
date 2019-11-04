@@ -1,4 +1,4 @@
-import { Processor, DocCollection, } from "dgeni";
+import { Processor } from "dgeni";
 import { ModuleDoc } from "dgeni-packages/typescript/api-doc-types/ModuleDoc";
 import { Document } from "../models/Document";
 import { NavigationDoc } from "../models/NavigationDoc";
@@ -20,7 +20,7 @@ export class Navigation implements Processor {
 	_navigationDocs:NavigationDoc[] = [];
 
 	$process( docs:Document[] ) {
-		const filteredDocs:Document[] = docs.filter( (doc:Document) => {
+		const filteredDocs:Document[] = docs.filter( ( doc:Document ) => {
 			if( [ "function-overload", "get-accessor-info" ].includes( doc.docType ) ) return false;
 
 			if( doc instanceof ModuleDoc ) {
@@ -41,7 +41,7 @@ export class Navigation implements Processor {
 		return filteredDocs;
 	}
 
-	_fixIndexModule( doc:ModuleDoc  ):void {
+	_fixIndexModule( doc:ModuleDoc ):void {
 		// Change document properties
 		doc.docType = "index";
 		doc.id = "";

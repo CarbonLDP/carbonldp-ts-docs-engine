@@ -1,6 +1,6 @@
 export interface InlineTagDef {
 	name:string;
-    description: string;
-    handler: Function;
+	description:string;
+	handler:Function;
 }
 

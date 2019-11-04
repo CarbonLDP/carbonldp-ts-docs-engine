@@ -60,13 +60,13 @@ export class NormalizeDocs implements Processor {
 		} );
 
 		// Fixes document link aliases
-		docs.forEach(doc => {
-			if (doc.docType === "module") {
+		docs.forEach( doc => {
+			if( doc.docType === "module" ) {
 				doc.aliases.length = 0;
-			} else if (doc.docType === "member") {
+			} else if( doc.docType === "member" ) {
 				doc.aliases.shift();
 			}
-		});
+		} );
 
 		return docs;
 	}

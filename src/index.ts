@@ -12,21 +12,21 @@ namespace DocsEngine {
 		out:string;
 		mode:"production" | "development";
 		logLevel?:"error" | "warn" | "info" | "verbose" | "debug" | "silly";
-		npmName?: string;
-		name?: string;
-		descriptionTemplate?: string;
-		mainClass?: string;
+		npmName?:string;
+		name?:string;
+		descriptionTemplate?:string;
+		mainClass?:string;
 	}
 
 	export interface InternalOptions extends Options {
-		log:winston.Logger
+		log:winston.Logger;
 	}
 
 	export interface Project {
-		name: string;
-		npmName: string;
-		mainClass: string;
-		descriptionTemplate: string;
+		name:string;
+		npmName:string;
+		mainClass:string;
+		descriptionTemplate:string;
 	}
 
 	async function generateHTML( options:InternalOptions ):Promise<string[]> {
@@ -43,20 +43,18 @@ namespace DocsEngine {
 			.config( function( writeFilesProcessor:any ) {
 				writeFilesProcessor.outputFolder = options.out;
 			} )
-			.config(function(renderDocsProcessor:any) {
-
-				renderDocsProcessor.extraData.project = <Project> {
+			.config( function( renderDocsProcessor:any ) {
+				renderDocsProcessor.extraData.project = <Project>{
 					name: options.name,
 					npmName: options.npmName,
 					mainClass: options.mainClass,
-					descriptionTemplate: path.basename(options.descriptionTemplate!)
+					descriptionTemplate: path.basename( options.descriptionTemplate! )
 				};
-			})
-			.config(function(templateFinder:any){
-					templateFinder.templateFolders
-						.push( path.dirname(options.descriptionTemplate!));
-
-			})
+			} )
+			.config( function( templateFinder:any ) {
+				templateFinder.templateFolders
+					.push( path.dirname( options.descriptionTemplate! ) );
+			} )
 		;
 
 		const docs:ApiDoc[] = await new Dgeni( [ configuredPackage ] )
@@ -104,19 +102,19 @@ namespace DocsEngine {
 				} ) );
 
 				if( error ) reject( error );
-				if( stats.hasErrors() ) reject( new Error(stats.toString("errors-only")));
+				if( stats.hasErrors() ) reject( new Error( stats.toString( "errors-only" ) ) );
 				else resolve();
 			} );
 		} )
 	}
 
 
-	 	async function parseOptions( options:Options ): Promise<InternalOptions> {
+	async function parseOptions( options:Options ):Promise<InternalOptions> {
+		let npmName = __getPackageName( options );
+		let name = __getName( options, npmName );
+		let mainClass = __getMainClass( options, npmName );
+		let descriptionTemplate = __getDescriptionTemplate( options );
 
-		let npmName = __getPackageName(options);
-		let name = __getName(options, npmName);
-		let mainClass = __getMainClass(options, npmName);
-		let descriptionTemplate = __getDescriptionTemplate(options);
 		// Default values
 		const preOptions = Object.assign(
 			{
@@ -152,46 +150,45 @@ namespace DocsEngine {
 		await bundle( internalOptions, files );
 	}
 
-	function __getPackageName(options:Options):string {
-		if (options.npmName) return options.npmName;
-		if (process.env.npm_package_name) return process.env.npm_package_name;
-		return path.basename(process.cwd());
+	function __getPackageName( options:Options ):string {
+		if( options.npmName ) return options.npmName;
+		if( process.env.npm_package_name ) return process.env.npm_package_name;
+		return path.basename( process.cwd() );
 	}
 
-	function __getName(options:Options, npmName:string){
-		if (options.name) return options.name;
+	function __getName( options:Options, npmName:string ) {
+		if( options.name ) return options.name;
 
-		let emphaziseLetters:RegExp = /^(.?)|( .)/g;
+		npmName = __removePunctuation( npmName );
 
-		npmName = __removePunctuation(npmName);
-
-		return npmName.replace(emphaziseLetters, function(match) { return match.toUpperCase(); });
+		let emphasiseLetters:RegExp = /^(.?)|( .)/g;
+		return npmName.replace( emphasiseLetters, function( match ) { return match.toUpperCase(); } );
 
 	}
 
-	 function __getDescriptionTemplate(options:Options): string {
-		return options.descriptionTemplate ? options.descriptionTemplate : path.resolve(process.cwd(), "build/docs/templates/description-template.njk");
+	function __getDescriptionTemplate( options:Options ):string {
+		return options.descriptionTemplate ? options.descriptionTemplate : path.resolve( process.cwd(), "build/docs/templates/description-template.njk" );
 	}
 
-	function __getMainClass(options: Options, npmName: string): string | undefined {
+	function __getMainClass( options:Options, npmName:string ):string {
+		if( options.mainClass ) return options.mainClass;
 
-		if (options.mainClass) return options.mainClass;
-		let punctuationMatcher:RegExp = /(-|_|\.|\/)/g;
-		
 		// Removes punctuation and capitalizes class name for PascalCase convention
-		let className = npmName.replace(/\w+/g, match => {
-			return match[0].toUpperCase() + match.slice(1).toLowerCase();
-		});
-		return className.replace(punctuationMatcher,"");
+		let className = npmName.replace( /\w+/g, match => {
+			return match[ 0 ].toUpperCase() + match.slice( 1 ).toLowerCase();
+		} );
+
+		let punctuationMatcher:RegExp = /([-_.\/])/g;
+		return className.replace( punctuationMatcher, "" );
 	}
 
-	function __removePunctuation(str: string): string{
-		let punctuationMatcher:RegExp = /(-|_|\.|\/)/g;
-		// If the first or last character was a special symbol, remove extra space
-		let normalizeName:RegExp = /^( )|( )$/g 
+	function __removePunctuation( str:string ):string {
+		let punctuationMatcher:RegExp = /([-_.\/])/g;
+		str = str.replace( punctuationMatcher, " " );
 
-		str = str.replace(punctuationMatcher, " ");
-		return str.replace(normalizeName, "");
+		// If the first or last character was a special symbol, remove extra space
+		let normalizeName:RegExp = /^( )|( )$/g;
+		return str.replace( normalizeName, "" );
 	}
 
 }

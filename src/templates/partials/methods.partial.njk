@@ -1,2 +1,2 @@
 {% set members = doc.members | selectattr( 'params' ) | rejectattr( 'isIndex' ) %}
-{{renderMember.renderMethod(false, members)}}
+{{ renderMember.renderMethod(false, members) }}

@@ -46,7 +46,7 @@
 		width: 100%;
 		z-index: 1000;
 
-		background-color: rgba( 0, 0, 0, .65);
+		background-color: rgba(0, 0, 0, .65);
 		transition: opacity $sidebar-transition-params;
 	}
 
@@ -57,9 +57,11 @@
 	&__menu:not(.visible) {
 		width: 0;
 	}
+
 	&__menu.visible + &__content {
 		width: calc(100% - #{$sidebar-width});
 	}
+
 	&__menu.visible + &__content > &__location {
 		width: calc(100% + 101px);
 		transform: translateX(-100px);
