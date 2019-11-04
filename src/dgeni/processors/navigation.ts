@@ -1,4 +1,4 @@
-import { Processor, } from "dgeni";
+import { Processor } from "dgeni";
 import { ModuleDoc } from "dgeni-packages/typescript/api-doc-types/ModuleDoc";
 import { Document } from "../models/Document";
 import { NavigationDoc } from "../models/NavigationDoc";
@@ -20,8 +20,8 @@ export class Navigation implements Processor {
 	_navigationDocs:NavigationDoc[] = [];
 
 	$process( docs:Document[] ) {
-		const filteredDocs:Document[] = docs.filter( doc => {
-			if( [ "function-overload" ].includes( doc.docType ) ) return false;
+		const filteredDocs:Document[] = docs.filter( ( doc:Document ) => {
+			if( [ "function-overload", "get-accessor-info" ].includes( doc.docType ) ) return false;
 
 			if( doc instanceof ModuleDoc ) {
 				if( doc.fileInfo.baseName !== "index" ) return false;
@@ -41,20 +41,15 @@ export class Navigation implements Processor {
 		return filteredDocs;
 	}
 
-	_fixIndexModule( doc:ModuleDoc & { isDefault?:boolean } ):void {
+	_fixIndexModule( doc:ModuleDoc ):void {
 		// Change document properties
 		doc.docType = "index";
 		doc.id = "";
-		doc.isDefault = false;
 
 		let exported:boolean = false;
 		doc.exports = doc.exports.filter( exportDoc => {
-			if( (exported && exportDoc.name === "SPARQLER") || exportDoc.name === "default" ) return false;
+			if( exportDoc.name === "default" ) return false;
 
-			if( exportDoc.name === "SPARQLER" ) {
-				exportDoc.isDefault = true;
-				exported = true;
-			}
 			// Remove `index` from id
 			exportDoc.id = exportDoc.id.substr( 6 );
 

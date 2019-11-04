@@ -1,0 +1,2 @@
+{% set staticMembers = doc.statics | selectattr( 'params' ) | rejectattr( 'isIndex' ) %}
+{{ renderMember.renderMethod(true, staticMembers) }}

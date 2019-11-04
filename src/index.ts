@@ -6,25 +6,28 @@ import webpack = require("webpack");
 import winston = require("winston");
 
 
-// Add missing webpack functions types
-declare module "webpack" {
-	namespace Stats {
-		function presetToOptions( name:webpack.Stats.Preset ):webpack.Stats.ToJsonOptionsObject;
-	}
-}
-
 namespace DocsEngine {
 	export interface Options {
 		src:string;
 		out:string;
 		mode:"production" | "development";
 		logLevel?:"error" | "warn" | "info" | "verbose" | "debug" | "silly";
+		npmName?:string;
+		name?:string;
+		descriptionTemplate?:string;
+		mainClass?:string;
 	}
 
 	export interface InternalOptions extends Options {
-		log:winston.Logger
+		log:winston.Logger;
 	}
 
+	export interface Project {
+		name:string;
+		npmName:string;
+		mainClass:string;
+		descriptionTemplate:string;
+	}
 
 	async function generateHTML( options:InternalOptions ):Promise<string[]> {
 		options.log.info( `=== Generate HTML with Dgeni ===` );
@@ -39,6 +42,18 @@ namespace DocsEngine {
 			} )
 			.config( function( writeFilesProcessor:any ) {
 				writeFilesProcessor.outputFolder = options.out;
+			} )
+			.config( function( renderDocsProcessor:any ) {
+				renderDocsProcessor.extraData.project = <Project>{
+					name: options.name,
+					npmName: options.npmName,
+					mainClass: options.mainClass,
+					descriptionTemplate: path.basename( options.descriptionTemplate! )
+				};
+			} )
+			.config( function( templateFinder:any ) {
+				templateFinder.templateFolders
+					.push( path.dirname( options.descriptionTemplate! ) );
 			} )
 		;
 
@@ -87,18 +102,27 @@ namespace DocsEngine {
 				} ) );
 
 				if( error ) reject( error );
-				if( stats.hasErrors() ) reject( new Error(stats.toString("errors-only")));
+				if( stats.hasErrors() ) reject( new Error( stats.toString( "errors-only" ) ) );
 				else resolve();
 			} );
 		} )
 	}
 
 
-	function parseOptions( options:Options ):InternalOptions {
+	async function parseOptions( options:Options ):Promise<InternalOptions> {
+		let npmName = __getPackageName( options );
+		let name = __getName( options, npmName );
+		let mainClass = __getMainClass( options, npmName );
+		let descriptionTemplate = __getDescriptionTemplate( options );
+
 		// Default values
 		const preOptions = Object.assign(
 			{
 				logLevel: "info",
+				npmName: npmName,
+				name: name,
+				mainClass: mainClass,
+				descriptionTemplate: descriptionTemplate
 			},
 			options,
 		);
@@ -120,10 +144,51 @@ namespace DocsEngine {
 	}
 
 	export async function generate( options:Options ):Promise<void> {
-		const internalOptions = parseOptions( options );
+		const internalOptions = await parseOptions( options );
 
 		const files = await generateHTML( internalOptions );
 		await bundle( internalOptions, files );
+	}
+
+	function __getPackageName( options:Options ):string {
+		if( options.npmName ) return options.npmName;
+		if( process.env.npm_package_name ) return process.env.npm_package_name;
+		return path.basename( process.cwd() );
+	}
+
+	function __getName( options:Options, npmName:string ) {
+		if( options.name ) return options.name;
+
+		npmName = __removePunctuation( npmName );
+
+		let emphasiseLetters:RegExp = /^(.?)|( .)/g;
+		return npmName.replace( emphasiseLetters, function( match ) { return match.toUpperCase(); } );
+
+	}
+
+	function __getDescriptionTemplate( options:Options ):string {
+		return options.descriptionTemplate ? options.descriptionTemplate : path.resolve( process.cwd(), "build/docs/templates/description-template.njk" );
+	}
+
+	function __getMainClass( options:Options, npmName:string ):string {
+		if( options.mainClass ) return options.mainClass;
+
+		// Removes punctuation and capitalizes class name for PascalCase convention
+		let className = npmName.replace( /\w+/g, match => {
+			return match[ 0 ].toUpperCase() + match.slice( 1 ).toLowerCase();
+		} );
+
+		let punctuationMatcher:RegExp = /([-_.\/])/g;
+		return className.replace( punctuationMatcher, "" );
+	}
+
+	function __removePunctuation( str:string ):string {
+		let punctuationMatcher:RegExp = /([-_.\/])/g;
+		str = str.replace( punctuationMatcher, " " );
+
+		// If the first or last character was a special symbol, remove extra space
+		let normalizeName:RegExp = /^( )|( )$/g;
+		return str.replace( normalizeName, "" );
 	}
 
 }

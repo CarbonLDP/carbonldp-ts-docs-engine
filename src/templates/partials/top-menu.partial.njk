@@ -1,6 +1,6 @@
 <div class="ui top fixed inverted menu top-menu">
     <a class="item top-menu_title" href="/">
-        SPARQLER Docs
+        {{ project.name }} Docs
     </a>
     <div class="ui right aligned search item js-search">
         <div class="ui icon input">
@@ -14,7 +14,7 @@
 <script>
 	window._searchSource = [
         {%- for moduleDoc in doc.navigationDocs %}
-        {%- if moduleDoc.name !== "index" or not moduleDoc.isDefault%}
+        {%- if moduleDoc.name !== "index" or not moduleDoc.isDefault %}
         {%- for exported in moduleDoc.exports -%}
 		{
 			"title": "{{ exported.name }}",

@@ -20,7 +20,7 @@ const sourceDir = path.resolve( process.cwd(), "src/" );
 const outputDir = path.resolve( process.cwd(), "docs/" );
 const templateDir = path.resolve( __dirname, "../templates/" );
 
-export const apiDocsPackage = new Package( "sparqler-api-docs", [
+export const apiDocsPackage = new Package( "ts-docs-engine", [
 	require( "dgeni-packages/jsdoc" ),
 	require( "dgeni-packages/nunjucks" ),
 	require( "dgeni-packages/typescript" ),

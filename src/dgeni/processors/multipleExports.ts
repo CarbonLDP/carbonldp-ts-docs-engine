@@ -2,6 +2,7 @@ import { DocCollection, Processor } from "dgeni";
 import { ConstExportDoc } from "dgeni-packages/typescript/api-doc-types/ConstExportDoc";
 import { InterfaceExportDoc } from "dgeni-packages/typescript/api-doc-types/InterfaceExportDoc";
 import { MethodMemberDoc } from "dgeni-packages/typescript/api-doc-types/MethodMemberDoc";
+import { PropertyMemberDoc } from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import { Host } from "dgeni-packages/typescript/services/ts-host/host";
 import { getExportDocType } from "dgeni-packages/typescript/services/TsParser";
 import { SymbolFlags } from "typescript";
@@ -14,7 +15,7 @@ export function multipleExports( tsHost:Host, log:Logger ):MultipleExports {
 }
 
 interface ConstantExport extends ConstExportDoc {
-	members?:MethodMemberDoc[];
+	members?:(MethodMemberDoc | PropertyMemberDoc)[];
 }
 
 export class MultipleExports implements Processor {
@@ -67,22 +68,36 @@ export class MultipleExports implements Processor {
 				doc.constants = [ exportDoc ]; // Add the constant's document to the Interface Document as a reference
 				exportDoc.members = []; // Array for possible methods within the constant
 				try {
-					let members = doc.constants[ 0 ].declaration.type.members; //If the constant has a description, it will be stored here.
-					this.docs.push( exportDoc );
+					let members = doc.constants[ 0 ].declaration.type.members; // If the constant has a description, it will be stored here.
 					members.forEach( ( member:any ) => {
-						// Create method document and push it to both the constant document as well as the full document's list.
-						let methodDoc:MethodMemberDoc = new MethodMemberDoc( this.tsHost, doc, member.symbol, member );
-						exportDoc.members!.push( methodDoc );
-						this.docs.push( methodDoc );
-					} )
+						let memberDoc:MethodMemberDoc | PropertyMemberDoc | undefined = undefined;
+						if( member.kind === 155 || member.kind === 156 ) {
+							// Create method document and push it to both the constant document as well as the full document's list.
+							memberDoc = new MethodMemberDoc( this.tsHost, doc, member.symbol, member );
+						} else if( member.kind === 153 || member.kind === 154 ) {
+							memberDoc = new PropertyMemberDoc( this.tsHost, doc, member.symbol, member, null, null );
+						}
+						if( memberDoc ) {
+							exportDoc.members!.push( memberDoc );
+							this.docs.push( memberDoc );
+						}
+					} );
 				} catch {
-					// If the constant doesn't have a description, it will be stored here.
+					// // If the constant doesn't have a description, it will be stored here.
 					let container = doc.constants[ 0 ].variableDeclaration.initializer.nextContainer;
-					// Create method document and push it to both the constant document as well as the full document's list.
-					let methodDoc:MethodMemberDoc = new MethodMemberDoc( this.tsHost, doc, container.symbol, container );
-					exportDoc.members.push( methodDoc );
-					this.docs.push( exportDoc );
-					this.docs.push( methodDoc );
+					if( container ) {
+						let memberDoc:MethodMemberDoc | PropertyMemberDoc | undefined = undefined;
+						if( container.kind === 155 || container.kind === 156 ) {
+							// Create method document and push it to both the constant document as well as the full document's list.
+							memberDoc = new MethodMemberDoc( this.tsHost, doc, container.symbol, container );
+						} else if( container.kind === 153 || container.kind === 154 ) {
+							memberDoc = new PropertyMemberDoc( this.tsHost, doc, container.symbol, container, null, null );
+						}
+						if( memberDoc ) {
+							exportDoc.members!.push( memberDoc );
+							this.docs.push( memberDoc );
+						}
+					}
 				}
 				break;
 

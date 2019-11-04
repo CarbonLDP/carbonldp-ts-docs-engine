@@ -58,6 +58,16 @@ export class NormalizeDocs implements Processor {
 					break;
 			}
 		} );
+
+		// Fixes document link aliases
+		docs.forEach( doc => {
+			if( doc.docType === "module" ) {
+				doc.aliases.length = 0;
+			} else if( doc.docType === "member" ) {
+				doc.aliases.shift();
+			}
+		} );
+
 		return docs;
 	}
 
@@ -70,11 +80,6 @@ export class NormalizeDocs implements Processor {
 		if( doc.statics ) doc.statics
 			.filter( isMethod )
 			.forEach( this._normalizeFunctionLike, this );
-
-		if( doc.extendsClauses.length )
-			doc.extendsClauses.forEach( info =>
-				this._normalizeClass( info.doc as ClassExportDoc ),
-			);
 
 		if( doc.interface ) {
 			doc.interface.description = this.tsHost.getContent( doc.symbol.getDeclarations()![ 0 ]! );

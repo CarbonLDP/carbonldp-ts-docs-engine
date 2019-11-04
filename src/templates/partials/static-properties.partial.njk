@@ -1,0 +1,3 @@
+{% set staticMembers = doc.statics | rejectattr( 'params' ) %}
+{{ renderMember.renderProperty(true, staticMembers) }}
+
