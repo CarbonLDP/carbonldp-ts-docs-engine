@@ -40,7 +40,12 @@ module.exports = ( env, argv ) => ({
 			{
 				test: /\.s?css$/,
 				use: [
-					MiniCssExtractPlugin.loader,
+					{
+						loader: MiniCssExtractPlugin.loader,
+						options: {
+							publicPath: '../'
+						}
+					},
 					"css-loader?sourceMap&importLoaders=1",
 					"sass-loader?sourceMap",
 				],
@@ -52,7 +57,7 @@ module.exports = ( env, argv ) => ({
 						loader: "url-loader",
 						query: {
 							limit: 1024,
-							name: `/assets/${getName( argv )}`,
+							name: `assets/${getName( argv )}`,
 						},
 					},
 					{
@@ -71,7 +76,7 @@ module.exports = ( env, argv ) => ({
 					{
 						loader: "file-loader",
 						options: {
-							name: `/assets/${getName( argv )}`,
+							name: `assets/${getName( argv )}`,
 						},
 					},
 					{
