@@ -31,8 +31,9 @@ module.exports = ( env, argv ) => ({
 	},
 
 	output: {
-		path: env.DIST,
-		filename: `assets/${getName( argv, "js" )}`,
+		path: path.join( env.DIST, "assets/" ),
+		publicPath: "assets/",
+		filename: getName( argv, "js" ),
 	},
 
 	module: {
@@ -43,7 +44,7 @@ module.exports = ( env, argv ) => ({
 					{
 						loader: MiniCssExtractPlugin.loader,
 						options: {
-							publicPath: '../'
+							publicPath: "./"
 						}
 					},
 					"css-loader?sourceMap&importLoaders=1",
@@ -57,7 +58,7 @@ module.exports = ( env, argv ) => ({
 						loader: "url-loader",
 						query: {
 							limit: 1024,
-							name: `assets/${getName( argv )}`,
+							name: getName( argv ),
 						},
 					},
 					{
@@ -76,7 +77,7 @@ module.exports = ( env, argv ) => ({
 					{
 						loader: "file-loader",
 						options: {
-							name: `assets/${getName( argv )}`,
+							name: getName( argv ),
 						},
 					},
 					{
@@ -92,7 +93,7 @@ module.exports = ( env, argv ) => ({
 
 	plugins: [
 		new MiniCssExtractPlugin( {
-			filename: `assets/${getName( argv, "css" )}`,
+			filename: getName( argv, "css" ),
 		} ),
 		new webpack.ProvidePlugin( {
 			$: "jquery",
@@ -103,6 +104,11 @@ module.exports = ( env, argv ) => ({
 				"NODE_ENV": JSON.stringify( argv.mode ),
 			},
 		} ),
-		new FaviconsWebpackPlugin( path.resolve( SRC_DIR, "images/carbon-ldp-iconograph_500x478.png" ) ),
+		new FaviconsWebpackPlugin( {
+			logo: path.resolve( SRC_DIR, "images/carbon-ldp-iconograph_500x478.png" ),
+			publicPath: "./",
+			outputPath: "../",
+			prefix: "",
+		} ),
 	],
 });
