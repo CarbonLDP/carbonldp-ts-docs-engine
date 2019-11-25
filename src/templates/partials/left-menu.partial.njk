@@ -11,12 +11,12 @@
             <div class="item {{ ' active' if doc.id === moduleDoc.id or doc.moduleDoc.id === moduleDoc.id }}">
                 {% if moduleDoc.name !== "index" %}
                     <div class="module-menu-header">
-                        <a class="item module-menu-header__link" href="/{{ moduleDoc.id }}">{{ moduleDoc.id }}</a>
+                        <a class="item module-menu-header__link" href="{{ moduleDoc.id }}">{{ moduleDoc.id }}</a>
                     </div>
                 {% endif %}
                 <div class="menu">
                     {% for exported in moduleDoc.exports -%}
-                        <a class="item{{ ' active' if doc.id === exported.id }}" href="/{{ exported.id }}">{{ exported.name }}</a>
+                        <a class="item{{ ' active' if doc.id === exported.id }}" href="{{ exported.id }}">{{ exported.name }}</a>
                     {% endfor %}
                 </div>
             </div>

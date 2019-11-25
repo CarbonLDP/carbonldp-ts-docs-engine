@@ -41,11 +41,14 @@ export const apiDocsPackage = new Package( "ts-docs-engine", [
 	} )
 
 	// Configure the output path for written files (i.e., file names).
-	.config( function( computePathsProcessor:any, computeIdsProcessor:any ) {
+	.config( function( gitData:any, checkAnchorLinksProcessor:any, computePathsProcessor:any, computeIdsProcessor:any ) {
+		// Set empty, to allow only relative URLs
+		checkAnchorLinksProcessor.webRoot = "";
+		checkAnchorLinksProcessor.base = gitData.version.isSnapshot ? "/" : `/${ gitData.info.repo }/`;
 
 		computePathsProcessor.pathTemplates.push( {
 			docTypes: [ "module", "class", "interface", "function", "enum", "type-alias", "const" ],
-			pathTemplate: "/${id}/",
+			pathTemplate: "${id}",
 			outputPathTemplate: "${id}/index.html",
 		} );
 
