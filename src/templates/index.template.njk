@@ -11,7 +11,7 @@
         {% for moduleDoc in doc.navigationDocs %}
             <div class="item contents-table__module">
                 <div class="content">
-                    <a class="item" href="/{{ moduleDoc.id }}">
+                    <a class="item" href="{{ moduleDoc.id }}">
                         {%- set module -%}
                             import {} from "{{ project.npmName }}{{ '/' + moduleDoc.id if moduleDoc.name !== 'index' }}"
                         {%- endset %}
@@ -29,7 +29,7 @@
                                 {% set color = 'violet' if exported.docType === 'const'      else color %}
                                 <span class="ui horizontal {{ color }} icon label contents-item__icon">{{ exported.docType | first | capitalize }}</span>
                                 <div class="content contents-item__text">
-                                    <a href="/{{ exported.id }}">{{ exported.name }}</a>
+                                    <a href="{{ exported.id }}">{{ exported.name }}</a>
                                 </div>
                             </div>
                         {%- endfor %}
