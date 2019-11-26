@@ -1,6 +1,6 @@
 {
   "name": "carbonldp-ts-docs-engine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Engine to generate API documentation for Carbon LDP TypeScript projects",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
