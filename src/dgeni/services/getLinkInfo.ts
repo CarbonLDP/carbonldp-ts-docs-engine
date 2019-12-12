@@ -1,5 +1,7 @@
 import { Document } from 'dgeni';
 import path from "path";
+import { PropertyMemberDoc } from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
+import winston from 'winston';
 
 export interface LinkInfo {
     url: string,
@@ -10,7 +12,7 @@ export interface LinkInfo {
     errorType?: string
 }
 
-export default function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, log:any): Function {
+export function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, log:winston.Logger): Function {
     return function getLinkInfoImpl( url:string, title:string, currentDoc:Document) {
         let linkInfo: LinkInfo = {
             url: url,
@@ -24,6 +26,7 @@ export default function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, lo
         }
     
         var docs = getDocFromAlias(url, currentDoc);
+        let isProperty = (docs[0] instanceof PropertyMemberDoc)
         
         // @ts-ignore
         if ( !getLinkInfoImpl.useFirstAmbiguousLink && docs.length > 1 ) {
@@ -33,7 +36,7 @@ export default function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, lo
         linkInfo.error = 'Ambiguous link: "' + url + '".\n' +
             docs.reduce(function(msg: string, doc: Document) { return msg + '\n  "' + doc.id + '" ('+ doc.docType + ') : (' + doc.path + ' / ' + doc.fileInfo.relativePath + ')'; }, 'Matching docs: ');
     
-        } else if ( docs.length >= 1 ) {
+        } else if ( docs.length >= 1 && !isProperty) {
     
         linkInfo.url = docs[0].path;
         linkInfo.title = title || encodeCodeBlock(docs[0].name, true);
@@ -52,13 +55,14 @@ export default function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, lo
         var pathAndHash = url.split('#');
         linkInfo = getLinkInfoImpl(pathAndHash[0], title, currentDoc);
         linkInfo.url = linkInfo.url + '#' + pathAndHash[1];
+        linkInfo.title = encodeCodeBlock(url, true, null, !isProperty)
         return linkInfo;
     
         } else if ( url.indexOf('.') > 0 ) {
         var pathAndDot = url.split('.');
         linkInfo = getLinkInfoImpl(pathAndDot[0], title, currentDoc);
         linkInfo.url = linkInfo.url + '#' + pathAndDot[1];
-        linkInfo.title = `<code> ${url}</code>`;
+        linkInfo.title = encodeCodeBlock(url, true, null, !isProperty)
         return linkInfo;
         } else if ( url.indexOf('/') === -1 && url.indexOf('.') !== 0 ) {
     
