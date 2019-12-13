@@ -79,7 +79,7 @@ This will generate a .tgz file, which can be used to install the Docs Engine fro
     - `uglifyjs-webpack-plugin`: Webpack plugin that minifies JavaScript files
     - `url-loader`: A loader for webpack which transforms files into base64 URIs
     - `webpack`: Module bundler for the project
-    - `webpack-merge`: provides a merge function that concatenates arrays and merges objects creating a new object
+    - `webpack-merge`: Provides a merge function that concatenates arrays and merges objects creating a new object
     - `winston`: Logger used in the project
 - `devDependencies`
     - `@types/marked`: TypeScript definitions for marked, used by dgeni-packages

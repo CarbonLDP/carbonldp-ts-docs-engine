@@ -16,8 +16,8 @@ Official Typescript Docs Engine for Carbon LDP Projects. Automatically generates
 import DocsEngine from "carbonldp-ts-docs-engine";
 
 const options:DocsEngine.Options = {
-	src: "src/",	                            // Directory from where the documentation is generated
-	out: "docs/",	                            // Directory where the documentation is stored
+	src: "src/",                                // Directory from where the documentation is generated
+	out: "docs/",                               // Directory where the documentation is stored
 	mode: "development",                        // Optional, mode in which the documentation is built
 	logLevel: "info",                           // Optional, filter logs by different levels 
 	descriptionTemplate: "path/to/template",    // Optional, must be a nunjucks file
