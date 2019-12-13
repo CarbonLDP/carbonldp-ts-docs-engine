@@ -13,7 +13,7 @@ import { highlightFilter } from "./rendering/filters/highlight";
 import { linkifyFilter } from "./rendering/filters/linkify";
 import { nullifyEmptyFilter } from "./rendering/filters/nullifyEmpty";
 import { highlightTag } from "./rendering/tags/highlight";
-import { getLinkInfo } from "./services/getLinkInfo";
+import { getLinkInfo } from "./services/getLinkInfo";
 
 
 // Paths configuration.
