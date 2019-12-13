@@ -13,6 +13,7 @@ import { highlightFilter } from "./rendering/filters/highlight";
 import { linkifyFilter } from "./rendering/filters/linkify";
 import { nullifyEmptyFilter } from "./rendering/filters/nullifyEmpty";
 import { highlightTag } from "./rendering/tags/highlight";
+import { getLinkInfo } from "./services/getLinkInfo";
 
 
 // Paths configuration.
@@ -28,6 +29,7 @@ export const apiDocsPackage = new Package( "ts-docs-engine", [
 	require( "dgeni-packages/git" ),
 ] )
 
+	.factory( getLinkInfo )
 	.processor( navigationProcessor )
 	.processor( normalizeDocsProcessor )
 	.processor( multipleExports )
