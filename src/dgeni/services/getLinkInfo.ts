@@ -25,7 +25,15 @@ export function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, log:winsto
         throw new Error('Invalid url');
         }
     
+        let hasParenthesis:boolean = false;
+
+        if (url.slice(-2) === "()"){
+            url = url.slice(0, -2);
+            hasParenthesis = true;
+        }
+
         var docs = getDocFromAlias(url, currentDoc);
+
         let isProperty = (docs[0] instanceof PropertyMemberDoc)
         
         // @ts-ignore
@@ -55,13 +63,15 @@ export function getLinkInfo(getDocFromAlias:any, encodeCodeBlock:any, log:winsto
         var pathAndHash = url.split('#');
         linkInfo = getLinkInfoImpl(pathAndHash[0], title, currentDoc);
         linkInfo.url = linkInfo.url + '#' + pathAndHash[1];
-        linkInfo.title = encodeCodeBlock(url, true, null, !isProperty)
+        if (hasParenthesis && !isProperty) url += "()";
+        linkInfo.title = encodeCodeBlock(url, true)
         return linkInfo;
     
         } else if ( url.indexOf('.') > 0 ) {
         var pathAndDot = url.split('.');
         linkInfo = getLinkInfoImpl(pathAndDot[0], title, currentDoc);
         linkInfo.url = linkInfo.url + '#' + pathAndDot[1];
+        if (hasParenthesis && !isProperty) url += "()";
         linkInfo.title = encodeCodeBlock(url, true, null, !isProperty)
         return linkInfo;
         } else if ( url.indexOf('/') === -1 && url.indexOf('.') !== 0 ) {
