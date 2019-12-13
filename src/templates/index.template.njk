@@ -6,6 +6,38 @@
     <h2 class="doc-content__title">{{ project.name }}</h2>
     {% include project.descriptionTemplate ignore missing %}
 
+    <h2 class="doc-content__title">Legend</h2>
+    <ul class="legend-list">
+        <li>
+            <span class="ui horizontal purple icon label">M</span>
+            <span>Module</span>
+        </li>
+        <li>
+            <span class="ui horizontal blue icon label">C</span>
+            <span>Class</span>
+        </li>
+        <li>
+            <span class="ui horizontal teal icon label">F</span>
+            <span>Function</span>
+        </li>
+        <li>
+            <span class="ui horizontal green icon label">E</span>
+            <span>Enum</span>
+        </li>
+        <li>
+            <span class="ui horizontal yellow icon label">T</span>
+            <span>Type Alias</span>
+        </li>
+        <li>
+            <span class="ui horizontal orange icon label">I</span>
+            <span>Interface</span>
+        </li>
+        <li>
+            <span class="ui horizontal red icon label">C</span>
+            <span>Const</span>
+        </li>
+    </ul>
+
     <h2 class="doc-content__title">Table of Contents</h2>
     <div class="ui celled list contents-table">
         {% for moduleDoc in doc.navigationDocs %}
@@ -26,7 +58,7 @@
                                 {% set color = 'teal'   if exported.docType === 'function'   else color %}
                                 {% set color = 'green'  if exported.docType === 'enum'       else color %}
                                 {% set color = 'yellow' if exported.docType === 'type-alias' else color %}
-                                {% set color = 'violet' if exported.docType === 'const'      else color %}
+                                {% set color = 'red'    if exported.docType === 'const'      else color %}
                                 <span class="ui horizontal {{ color }} icon label contents-item__icon">{{ exported.docType | first | capitalize }}</span>
                                 <div class="content contents-item__text">
                                     <a href="{{ exported.id }}">{{ exported.name }}</a>
