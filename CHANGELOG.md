@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - [#14](https://github.com/CarbonLDP/carbonldp-ts-docs-engine/issues/14) Added icon legend for better understanding of the index page
 
+### Fixed
+
+- [#9](https://github.com/CarbonLDP/carbonldp-ts-docs-engine/issues/9) Fix link tag syntax to support both dot and hash notation (`MyClass#instanceMethod` and `MyClass.staticMethod`)
+
 ## [1.0.1] (2019-11-26)
 
 ### Fixed
