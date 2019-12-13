@@ -15,6 +15,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- [#17](https://github.com/CarbonLDP/carbonldp-ts-docs-engine/issues/17) Overloaded methods now render with all their signatures
+
+## [1.0.1] (2019-11-26)
+
+### Fixed
+
+- [#12](https://github.com/CarbonLDP/carbonldp-ts-docs-engine/issues/12) Fix asset loading when deployed in gh-pages
+
+## [1.0.0] (2019-11-04)
+
 - First release
 
-[Unreleased]: https://github.com/CarbonLDP/sparqler/compare/5886818...HEAD
+[Unreleased]: https://github.com/CarbonLDP/sparqler/compare/v1.0.1...HEAD
+
+[1.0.1]: https://github.com/CarbonLDP/carbonldp-ts-docs-engine/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/CarbonLDP/carbonldp-ts-docs-engine/compare/5886818...v1.0.0
